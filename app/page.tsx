@@ -110,7 +110,10 @@ export default function Home() {
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontSize: 13,
+fontSize: 14,
+fontWeight: "bold",
+marginBottom: 2
+    
   }}
 >
 
