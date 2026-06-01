@@ -87,7 +87,8 @@ export default function Home() {
 
   if (!carregado) return null; // ✅ evita erro do Next
 
-  let cadeiras: JSX.Element[] = [];
+  let cadeiras: React.ReactNode[] = [];
+
 
   for (let i = 0; i < ROWS; i++) {
     for (let j = 0; j < GRID_COLS; j++) {
