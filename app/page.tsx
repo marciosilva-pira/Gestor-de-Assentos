@@ -158,35 +158,36 @@ export default function Home() {
         {cadeiras}
       </div>
 
-      {/* ✅ TITULOS RESTAURADOS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
-          `,
-          marginTop: 30,
-          marginBottom: 20,
-          fontSize: 16,
-          fontWeight: "bold",
-          color: "#ccc",
-        }}
-      >
-        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-          3 - CADEIRA (ESQUERDO)
-        </div>
+{/* TITULOS */}
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: `
+      repeat(5, 1fr) 0.2fr
+      repeat(6, 1fr) 0.2fr
+      repeat(6, 1fr) 0.2fr
+      repeat(5, 1fr)
+    `,
+    marginTop: 30,
+    marginBottom: 20,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#ccc",
+  }}
+>
+  <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+    3 - CADEIRA (ESQUERDO)
+  </div>
 
-        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-          2 - TRIBUNA
-        </div>
+  <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+    2 - TRIBUNA
+  </div>
 
-        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-          4 - MESA (DIREITO)
-        </div>
-      </div>
+  <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+    4 - MESA (DIREITO)
+  </div>
+</div>
+
 
       {/* BOTÕES */}
       <div style={{ display: "flex", gap: 10 }}>
