@@ -36,8 +36,11 @@ export default function Home() {
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
   const files = e.target.files;
 
+  if (!files) return;
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
+ 
 
     const formData = new FormData();
     formData.append("file", file);
