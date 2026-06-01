@@ -73,9 +73,22 @@ export default function Home() {
     );
 
     const data = await res.json();
-    novas.push(data.secure_url);
+
+    if (data.secure_url) {
+      novas.push(data.secure_url);
+    }
   }
 
+  // ✅ usa estado correto
+  const atualizado = [...fotos, ...novas];
+
+  setFotos(atualizado);
+
+  // ✅ salvar FORA do setState (IMPORTANTE)
+  await setDoc(doc(db, "cadeiras", "fotos"), {
+    lista: atualizado,
+  });
+}
   // ✅ CORREÇÃO FINAL (STATE CORRETO)
   setFotos((prev) => {
     const atualizado = [...prev, ...novas];
