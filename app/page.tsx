@@ -33,7 +33,7 @@ export default function Home() {
   }, [mapa, carregado]);
 
   // ✅ carregar fotos (base64, sem salvar)
-  async function carregarFotos(e) {
+  async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
   const files = e.target.files;
 
   for (let i = 0; i < files.length; i++) {
