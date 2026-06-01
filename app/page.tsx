@@ -11,7 +11,6 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<string[]>([]);
 
-  // ✅ UPLOAD (ACUMULA FOTOS)
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files) return;
@@ -41,7 +40,6 @@ export default function Home() {
       }
     }
 
-    // ✅ ACUMULA corretamente
     setFotos((prev) => [...prev, ...novas]);
   }
 
@@ -103,11 +101,11 @@ export default function Home() {
             margin: "0 auto",
           }}
         >
-          {/* ✅ NUMERO COM ESPAÇO CORRETO */}
+          {/* NUMERO */}
           <span
             style={{
               position: "absolute",
-              bottom: "130%", // 👈 espaço maior
+              bottom: "130%",
               width: "100%",
               textAlign: "center",
               color: "white",
@@ -152,42 +150,42 @@ export default function Home() {
             repeat(6, 1fr) 0.2fr
             repeat(5, 1fr)
           `,
-          gap: 10,
+          rowGap: 15,
+          columnGap: 5,
         }}
       >
         {cadeiras}
       </div>
 
-{/* TITULOS */}
-<div
-  style={{
-    display: "grid",
-    gridTemplateColumns: `
-      repeat(5, 1fr) 0.2fr
-      repeat(6, 1fr) 0.2fr
-      repeat(6, 1fr) 0.2fr
-      repeat(5, 1fr)
-    `,
-    marginTop: 30,
-    marginBottom: 20,
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#ccc",
-  }}
->
-  <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-    3 - CADEIRA (ESQUERDO)
-  </div>
+      {/* ✅ TITULOS (FIXO E VISÍVEL) */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `
+            repeat(5, 1fr) 0.2fr
+            repeat(6, 1fr) 0.2fr
+            repeat(6, 1fr) 0.2fr
+            repeat(5, 1fr)
+          `,
+          marginTop: 15,
+          marginBottom: 15,
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "#ccc",
+        }}
+      >
+        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+          3 - CADEIRA (ESQUERDO)
+        </div>
 
-  <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-    2 - TRIBUNA
-  </div>
+        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+          2 - TRIBUNA
+        </div>
 
-  <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-    4 - MESA (DIREITO)
-  </div>
-</div>
-
+        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+          4 - MESA (DIREITO)
+        </div>
+      </div>
 
       {/* BOTÕES */}
       <div style={{ display: "flex", gap: 10 }}>
@@ -208,7 +206,6 @@ export default function Home() {
             color: "white",
             padding: "10px 20px",
             borderRadius: 5,
-            cursor: "pointer",
           }}
         >
           Carregar Fotos
@@ -221,7 +218,6 @@ export default function Home() {
             color: "white",
             padding: "10px 20px",
             borderRadius: 5,
-            cursor: "pointer",
           }}
         >
           Limpar Cadeiras
