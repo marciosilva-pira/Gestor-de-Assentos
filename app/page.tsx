@@ -11,6 +11,7 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<string[]>([]);
   const [carregando, setCarregando] = useState(false);
+  const [progresso, setProgresso] = useState(0);
 
   // ✅ Carregar do localStorage
   useEffect(() => {
@@ -22,39 +23,48 @@ export default function Home() {
     localStorage.setItem("mapa", JSON.stringify(mapa));
   }, [mapa]);
 
-  // ✅ Upload com loading
+  // ✅ Upload com progresso
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files) return;
 
     setCarregando(true);
+    setProgresso(0);
 
-    try {
-      const uploads = Array.from(files).map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "upload_cadeiras");
-        formData.append("folder", "cadeiras");
+    const total = files.length;
+    let concluidas = 0;
+    let novas: string[] = [];
 
-        const res = await fetch(
-          "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
 
-        const data = await res.json();
-        return data.secure_url;
-      });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "upload_cadeiras");
+      formData.append("folder", "cadeiras");
 
-      const resultados = await Promise.all(uploads);
-      const novas = resultados.filter(Boolean);
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      setFotos((prev) => [...prev, ...novas]);
-    } finally {
-      setCarregando(false);
+      const data = await res.json();
+
+      if (data.secure_url) {
+        novas.push(data.secure_url);
+      }
+
+      // ✅ Atualiza progresso
+      concluidas++;
+      const percent = Math.round((concluidas / total) * 100);
+      setProgresso(percent);
     }
+
+    setFotos((prev) => [...prev, ...novas]);
+    setCarregando(false);
   }
 
   function limparCadeiras() {
@@ -62,11 +72,11 @@ export default function Home() {
     setSelecionada(null);
   }
 
-  // ✅ Lógica completa: adicionar + mover
+  // ✅ mover + adicionar
   function clicarCadeira(num: number) {
     const novo = { ...mapa };
 
-    // ✅ pegar da cadeira (modo mover)
+    // pegar da cadeira (mover)
     if (!selecionada && novo[num]) {
       setSelecionada(novo[num]);
       delete novo[num];
@@ -84,9 +94,7 @@ export default function Home() {
 
       novo[num] = selecionada;
       setMapa(novo);
-
-      // ✅ limpa seleção (evita mover sem querer)
-      setSelecionada(null);
+      setSelecionada(null); // ✅ evita mover sem querer
     }
   }
 
@@ -260,7 +268,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* ✅ LOADING */}
+      {/* ✅ LOADING COM % + BARRA */}
       {carregando && (
         <div
           style={{
@@ -268,12 +276,36 @@ export default function Home() {
             padding: 15,
             background: "#222",
             borderRadius: 6,
-            textAlign: "center",
-            color: "#00FFAA",
-            fontWeight: "bold",
           }}
         >
-          ⏳ Carregando imagens... aguarde
+          <div
+            style={{
+              textAlign: "center",
+              color: "#00FFAA",
+              fontWeight: "bold",
+              marginBottom: 10,
+            }}
+          >
+            ⏳ Carregando imagens... {progresso}%
+          </div>
+
+          <div
+            style={{
+              height: 8,
+              background: "#444",
+              borderRadius: 5,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${progresso}%`,
+                height: "100%",
+                background: "#00FFAA",
+                transition: "0.3s",
+              }}
+            />
+          </div>
         </div>
       )}
 
