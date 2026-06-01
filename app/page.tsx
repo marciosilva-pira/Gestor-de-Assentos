@@ -19,14 +19,12 @@ export default function Home() {
   useEffect(() => {
     async function carregar() {
       try {
-        const refMapa = doc(db, "cadeiras", "mapa");
-        const snapMapa = await getDoc(refMapa);
+        const snapMapa = await getDoc(doc(db, "cadeiras", "mapa"));
         if (snapMapa.exists()) {
           setMapa(snapMapa.data().dados || {});
         }
 
-        const refFotos = doc(db, "cadeiras", "fotos");
-        const snapFotos = await getDoc(refFotos);
+        const snapFotos = await getDoc(doc(db, "cadeiras", "fotos"));
         if (snapFotos.exists()) {
           setFotos(snapFotos.data().lista || []);
         }
@@ -44,21 +42,21 @@ export default function Home() {
   useEffect(() => {
     if (!carregado) return;
 
-    async function salvar() {
+    const salvar = async () => {
       await setDoc(doc(db, "cadeiras", "mapa"), {
         dados: mapa,
       });
-    }
+    };
 
     salvar();
   }, [mapa, carregado]);
 
-  // ✅ UPLOAD + SALVAR FOTOS (VERSÃO CORRETA)
+  // ✅ UPLOAD FOTOS CORRETO
   async function carregarFotos(e: any) {
     const files = e.target.files;
     if (!files) return;
 
-    let novas: string[] = [];
+    let urlsNovas: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -79,15 +77,15 @@ export default function Home() {
       const data = await res.json();
 
       if (data.secure_url) {
-        novas.push(data.secure_url);
+        urlsNovas.push(data.secure_url);
       }
     }
 
-    // ✅ STATE CORRETO (IMPORTANTE)
+    // ✅ ATUALIZA CORRETAMENTE (SEM BUG)
     setFotos((prev) => {
-      const atualizado = [...prev, ...novas];
+      const atualizado = [...prev, ...urlsNovas];
 
-      // ✅ SALVAR NO FIREBASE
+      // salva no Firebase
       setDoc(doc(db, "cadeiras", "fotos"), {
         lista: atualizado,
       });
@@ -226,7 +224,7 @@ export default function Home() {
           style={{
             background: "#007BFF",
             color: "white",
-            padding: "10px 20px",
+            padding: 10,
             borderRadius: 5,
           }}
         >
@@ -238,7 +236,7 @@ export default function Home() {
           style={{
             background: "#dc3545",
             color: "white",
-            padding: "10px 20px",
+            padding: 10,
             borderRadius: 5,
           }}
         >
