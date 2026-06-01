@@ -132,128 +132,64 @@ export default function Home() {
   }
 
   return (
+  <div
+    style={{
+      background: "#1E1E1E",
+      padding: 20,
+      color: "white",
+    }}
+  >
+    {/* GRID */}
     <div
       style={{
-        background: "#1E1E1E",
-        minHeight: "100vh",
-        padding: 20,
-        color: "white",
+        display: "grid",
+        gridTemplateColumns: `
+          repeat(5, 1fr) 0.2fr
+          repeat(6, 1fr) 0.2fr
+          repeat(6, 1fr) 0.2fr
+          repeat(5, 1fr)
+        `,
+        rowGap: 15,
+        columnGap: 5,
       }}
     >
-      {/* GRID */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
-          `,
-          rowGap: 15,
-          columnGap: 5,
-        }}
-      >
-        {cadeiras}
+      {cadeiras}
+    </div>
+
+    {/* ✅ TITULOS (POSIÇÃO CORRETA) */}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `
+          repeat(5, 1fr) 0.2fr
+          repeat(6, 1fr) 0.2fr
+          repeat(6, 1fr) 0.2fr
+          repeat(5, 1fr)
+        `,
+        marginTop: 10,
+        marginBottom: 20,
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#ccc",
+      }}
+    >
+      <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+        3 - CADEIRA (ESQUERDO)
       </div>
 
-      {/* ✅ TITULOS (FIXO E VISÍVEL) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
-          `,
-          marginTop: 15,
-          marginBottom: 15,
-          fontSize: 16,
-          fontWeight: "bold",
-          color: "#ccc",
-        }}
-      >
-        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-          3 - CADEIRA (ESQUERDO)
-        </div>
-
-        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-          2 - TRIBUNA
-        </div>
-
-        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-          4 - MESA (DIREITO)
-        </div>
+      <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+        2 - TRIBUNA
       </div>
 
-      {/* BOTÕES */}
-      <div style={{ display: "flex", gap: 10 }}>
-        <input
-          id="uploadFotos"
-          type="file"
-          multiple
-          onChange={carregarFotos}
-          style={{ display: "none" }}
-        />
-
-        <button
-          onClick={() =>
-            document.getElementById("uploadFotos")?.click()
-          }
-          style={{
-            background: "#007BFF",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 5,
-          }}
-        >
-          Carregar Fotos
-        </button>
-
-        <button
-          onClick={limparCadeiras}
-          style={{
-            background: "#dc3545",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 5,
-          }}
-        >
-          Limpar Cadeiras
-        </button>
-      </div>
-
-      {/* MINIATURAS */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 10,
-          marginTop: 20,
-          padding: 10,
-          background: "#111",
-        }}
-      >
-        {fotos.map((src, index) => (
-          <img
-            key={index}
-            src={src}
-            onClick={() => setSelecionada(src)}
-            style={{
-              width: 60,
-              height: 60,
-              objectFit: "cover",
-              borderRadius: 6,
-              cursor: "pointer",
-              border:
-                selecionada === src
-                  ? "3px solid red"
-                  : "1px solid #444",
-            }}
-          />
-        ))}
+      <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+        4 - MESA (DIREITO)
       </div>
     </div>
-  );
+
+    {/* BOTÕES */}
+    <div style={{ display: "flex", gap: 10 }}>
+      ...
+    </div>
+  </div>
+);
 }
