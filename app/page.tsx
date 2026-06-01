@@ -11,7 +11,7 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<string[]>([]);
 
-  // ✅ UPLOAD CORRETO (ACUMULA FOTOS)
+  // ✅ UPLOAD (ACUMULA FOTOS)
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files) return;
@@ -41,7 +41,7 @@ export default function Home() {
       }
     }
 
-    // ✅ CORREÇÃO PRINCIPAL (ACUMULA)
+    // ✅ ACUMULA corretamente
     setFotos((prev) => [...prev, ...novas]);
   }
 
@@ -103,20 +103,18 @@ export default function Home() {
             margin: "0 auto",
           }}
         >
+          {/* ✅ NUMERO COM ESPAÇO CORRETO */}
           <span
-  style={{
-    position: "absolute",
-    bottom: "100%",
-    width: "100%",
-    textAlign: "center",
-    color: "white",
-fontSize: 14,
-fontWeight: "bold",
-marginBottom: 2
-    
-  }}
->
-
+            style={{
+              position: "absolute",
+              bottom: "130%", // 👈 espaço maior
+              width: "100%",
+              textAlign: "center",
+              color: "white",
+              fontSize: 14,
+              fontWeight: "bold",
+            }}
+          >
             {cadeiraNum}
           </span>
 
@@ -160,8 +158,38 @@ marginBottom: 2
         {cadeiras}
       </div>
 
+      {/* ✅ TITULOS RESTAURADOS */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `
+            repeat(5, 1fr) 0.2fr
+            repeat(6, 1fr) 0.2fr
+            repeat(6, 1fr) 0.2fr
+            repeat(5, 1fr)
+          `,
+          marginTop: 30,
+          marginBottom: 20,
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "#ccc",
+        }}
+      >
+        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+          3 - CADEIRA (ESQUERDO)
+        </div>
+
+        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+          2 - TRIBUNA
+        </div>
+
+        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+          4 - MESA (DIREITO)
+        </div>
+      </div>
+
       {/* BOTÕES */}
-      <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <input
           id="uploadFotos"
           type="file"
@@ -177,8 +205,9 @@ marginBottom: 2
           style={{
             background: "#007BFF",
             color: "white",
-            padding: 10,
+            padding: "10px 20px",
             borderRadius: 5,
+            cursor: "pointer",
           }}
         >
           Carregar Fotos
@@ -189,8 +218,9 @@ marginBottom: 2
           style={{
             background: "#dc3545",
             color: "white",
-            padding: 10,
+            padding: "10px 20px",
             borderRadius: 5,
+            cursor: "pointer",
           }}
         >
           Limpar Cadeiras
