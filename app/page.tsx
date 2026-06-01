@@ -51,39 +51,43 @@ export default function Home() {
 
   // ✅ UPLOAD + SALVAR FOTOS
   async function carregarFotos(e: any) {
-    const files = e.target.files;
-    if (!files) return;
+  const files = e.target.files;
+  if (!files) return;
 
-    let novas: string[] = [];
+  let novas: string[] = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "upload_cadeiras");
-      formData.append("folder", "cadeiras");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "upload_cadeiras");
+    formData.append("folder", "cadeiras");
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
-      const data = await res.json();
-      novas.push(data.secure_url);
-    }
+    const data = await res.json();
+    novas.push(data.secure_url);
+  }
 
-    const atualizado = [...fotos, ...novas];
+  // ✅ CORREÇÃO FINAL (STATE CORRETO)
+  setFotos((prev) => {
+    const atualizado = [...prev, ...novas];
 
-    setFotos(atualizado);
-
-    await setDoc(doc(db, "cadeiras", "fotos"), {
+    // ✅ salvar no Firebase com o estado correto
+    setDoc(doc(db, "cadeiras", "fotos"), {
       lista: atualizado,
     });
-  }
+
+    return atualizado;
+  });
+}
 
   function limparCadeiras() {
     if (confirm("Deseja limpar todas as cadeiras?")) {
