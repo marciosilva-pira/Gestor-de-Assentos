@@ -1,68 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { db } from "./firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useState } from "react";
 
 const COLS = 22;
 const ROWS = 6;
 const GRID_COLS = 25;
 
 export default function Home() {
-  const [carregado, setCarregado] = useState(false);
   const [selecionada, setSelecionada] = useState<string | null>(null);
-
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
-
   const [fotos, setFotos] = useState<string[]>([]);
 
-  // ✅ impedir erro de hydration
-  useEffect(() => {
-    const salvo = localStorage.getItem("mapaCadeiras");
-    if (salvo) {
-      setMapa(JSON.parse(salvo));
-    }
-    setCarregado(true);
-  }, []);
-
-  // ✅ salvar apenas mapa
-  useEffect(() => {
-    if (carregado) {
-      localStorage.setItem("mapaCadeiras", JSON.stringify(mapa));
-    }
-  }, [mapa, carregado]);
-
-  // ✅ carregar fotos (base64, sem salvar)
+  // ✅ UPLOAD CORRETO (ACUMULA FOTOS)
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
-  const files = e.target.files;
+    const files = e.target.files;
+    if (!files) return;
 
-  if (!files) return;
+    let novas: string[] = [];
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
- 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "upload_cadeiras"); // ✅ seu preset
-    formData.append("folder", "cadeiras"); // opcional (organiza)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "upload_cadeiras");
+      formData.append("folder", "cadeiras");
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-      {
-        method: "POST",
-        body: formData,
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.secure_url) {
+        novas.push(data.secure_url);
       }
-    );
+    }
 
-    const data = await res.json();
-
-    // ✅ salva URL da imagem online
-    setFotos(data.secure_url ? [data.secure_url] : []);
-
+    // ✅ CORREÇÃO PRINCIPAL (ACUMULA)
+    setFotos((prev) => [...prev, ...novas]);
   }
-}
-
 
   function limparCadeiras() {
     if (confirm("Deseja limpar todas as cadeiras?")) {
@@ -85,10 +66,7 @@ export default function Home() {
     setMapa(novo);
   }
 
-  if (!carregado) return null; // ✅ evita erro do Next
-
-  let cadeiras: React.ReactNode[] = [];
-
+  let cadeiras: any[] = [];
 
   for (let i = 0; i < ROWS; i++) {
     for (let j = 0; j < GRID_COLS; j++) {
@@ -106,15 +84,8 @@ export default function Home() {
       else col = j - 3;
 
       let linha = ROWS - 1 - i;
-
       let numeroLinha = linha * COLS + col + 1;
-
-      let cadeiraNum;
-      if (numeroLinha < 90) {
-        cadeiraNum = numeroLinha;
-      } else {
-        cadeiraNum = numeroLinha + 10;
-      }
+      let cadeiraNum = numeroLinha < 90 ? numeroLinha : numeroLinha + 10;
 
       const foto = mapa[cadeiraNum];
 
@@ -136,12 +107,10 @@ export default function Home() {
             style={{
               position: "absolute",
               bottom: "100%",
-              left: 0,
-              right: 0,
-              marginBottom: -2,
+              width: "100%",
               textAlign: "center",
-              fontSize: 15,
               color: "white",
+              fontSize: 13,
             }}
           >
             {cadeiraNum}
@@ -154,9 +123,6 @@ export default function Home() {
                 width: "100%",
                 height: "100%",
                 objectFit: "contain",
-                background: "#2B2B2B",
-                display: "block",
-                margin: "auto",
               }}
             />
           )}
@@ -170,10 +136,8 @@ export default function Home() {
       style={{
         background: "#1E1E1E",
         minHeight: "100vh",
-        padding: "40px 10px 10px 10px",
+        padding: 20,
         color: "white",
-        fontFamily: "Arial",
-        overflowX: "hidden",
       }}
     >
       {/* GRID */}
@@ -186,45 +150,14 @@ export default function Home() {
             repeat(6, 1fr) 0.2fr
             repeat(5, 1fr)
           `,
-          width: "100%",
-          margin: "0 auto",
-          rowGap: 19,
-          columnGap: 1,
+          gap: 10,
         }}
       >
         {cadeiras}
       </div>
 
-      {/* TITULOS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
-          `,
-          marginTop: 20,
-          marginBottom: 20,
-          fontSize: 15,
-        }}
-      >
-        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-          3 - CADEIRA (ESQUERDO)
-        </div>
-
-        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-          2 - TRIBUNA
-        </div>
-
-        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-          4 - MESA (DIREITO)
-        </div>
-      </div>
-
       {/* BOTÕES */}
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
         <input
           id="uploadFotos"
           type="file"
@@ -240,11 +173,8 @@ export default function Home() {
           style={{
             background: "#007BFF",
             color: "white",
-            padding: "10px 20px",
-            border: "none",
+            padding: 10,
             borderRadius: 5,
-            cursor: "pointer",
-            fontWeight: "bold",
           }}
         >
           Carregar Fotos
@@ -255,11 +185,8 @@ export default function Home() {
           style={{
             background: "#dc3545",
             color: "white",
-            padding: "10px 20px",
-            border: "none",
+            padding: 10,
             borderRadius: 5,
-            cursor: "pointer",
-            fontWeight: "bold",
           }}
         >
           Limpar Cadeiras
@@ -271,8 +198,10 @@ export default function Home() {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          gap: 6,
-          marginTop: 10,
+          gap: 10,
+          marginTop: 20,
+          padding: 10,
+          background: "#111",
         }}
       >
         {fotos.map((src, index) => (
@@ -281,10 +210,10 @@ export default function Home() {
             src={src}
             onClick={() => setSelecionada(src)}
             style={{
-              width: 50,
-              height: 50,
-              objectFit: "contain",
-              background: "#222",
+              width: 60,
+              height: 60,
+              objectFit: "cover",
+              borderRadius: 6,
               cursor: "pointer",
               border:
                 selecionada === src
