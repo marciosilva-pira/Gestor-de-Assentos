@@ -104,15 +104,16 @@ export default function Home() {
           }}
         >
           <span
-            style={{
-              position: "absolute",
-              bottom: "100%",
-              width: "100%",
-              textAlign: "center",
-              color: "white",
-              fontSize: 13,
-            }}
-          >
+  style={{
+    position: "absolute",
+    bottom: "100%",
+    width: "100%",
+    textAlign: "center",
+    color: "white",
+    fontSize: 13,
+  }}
+>
+
             {cadeiraNum}
           </span>
 
