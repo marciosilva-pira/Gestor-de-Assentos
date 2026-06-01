@@ -15,19 +15,23 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<string[]>([]);
 
-  // ✅ CARREGAR dados do Firebase
+  // ✅ CARREGAR DADOS
   useEffect(() => {
     async function carregar() {
-      const refMapa = doc(db, "cadeiras", "mapa");
-      const snapMapa = await getDoc(refMapa);
-      if (snapMapa.exists()) {
-        setMapa(snapMapa.data().dados || {});
-      }
+      try {
+        const refMapa = doc(db, "cadeiras", "mapa");
+        const snapMapa = await getDoc(refMapa);
+        if (snapMapa.exists()) {
+          setMapa(snapMapa.data().dados || {});
+        }
 
-      const refFotos = doc(db, "cadeiras", "fotos");
-      const snapFotos = await getDoc(refFotos);
-      if (snapFotos.exists()) {
-        setFotos(snapFotos.data().lista || []);
+        const refFotos = doc(db, "cadeiras", "fotos");
+        const snapFotos = await getDoc(refFotos);
+        if (snapFotos.exists()) {
+          setFotos(snapFotos.data().lista || []);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar:", e);
       }
 
       setCarregado(true);
@@ -36,7 +40,7 @@ export default function Home() {
     carregar();
   }, []);
 
-  // ✅ SALVAR mapa automaticamente
+  // ✅ SALVAR MAPA
   useEffect(() => {
     if (!carregado) return;
 
@@ -49,58 +53,48 @@ export default function Home() {
     salvar();
   }, [mapa, carregado]);
 
-  // ✅ UPLOAD + SALVAR FOTOS
+  // ✅ UPLOAD + SALVAR FOTOS (VERSÃO CORRETA)
   async function carregarFotos(e: any) {
-  const files = e.target.files;
-  if (!files) return;
+    const files = e.target.files;
+    if (!files) return;
 
-  let novas: string[] = [];
+    let novas: string[] = [];
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "upload_cadeiras");
-    formData.append("folder", "cadeiras");
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "upload_cadeiras");
+      formData.append("folder", "cadeiras");
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-      {
-        method: "POST",
-        body: formData,
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.secure_url) {
+        novas.push(data.secure_url);
       }
-    );
-
-    const data = await res.json();
-
-    if (data.secure_url) {
-      novas.push(data.secure_url);
     }
-  }
 
-  // ✅ usa estado correto
-  const atualizado = [...fotos, ...novas];
+    // ✅ STATE CORRETO (IMPORTANTE)
+    setFotos((prev) => {
+      const atualizado = [...prev, ...novas];
 
-  setFotos(atualizado);
+      // ✅ SALVAR NO FIREBASE
+      setDoc(doc(db, "cadeiras", "fotos"), {
+        lista: atualizado,
+      });
 
-  // ✅ salvar FORA do setState (IMPORTANTE)
-  await setDoc(doc(db, "cadeiras", "fotos"), {
-    lista: atualizado,
-  });
-}
-  // ✅ CORREÇÃO FINAL (STATE CORRETO)
-  setFotos((prev) => {
-    const atualizado = [...prev, ...novas];
-
-    // ✅ salvar no Firebase com o estado correto
-    setDoc(doc(db, "cadeiras", "fotos"), {
-      lista: atualizado,
+      return atualizado;
     });
-
-    return atualizado;
-  });
-}
+  }
 
   function limparCadeiras() {
     if (confirm("Deseja limpar todas as cadeiras?")) {
@@ -143,7 +137,6 @@ export default function Home() {
       else col = j - 3;
 
       let linha = ROWS - 1 - i;
-
       let numeroLinha = linha * COLS + col + 1;
       let cadeiraNum = numeroLinha < 90 ? numeroLinha : numeroLinha + 10;
 
@@ -170,6 +163,7 @@ export default function Home() {
               width: "100%",
               textAlign: "center",
               color: "white",
+              fontSize: 13,
             }}
           >
             {cadeiraNum}
@@ -252,7 +246,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* MINIATURAS MELHORADAS */}
+      {/* MINIATURAS */}
       <div
         style={{
           display: "flex",
