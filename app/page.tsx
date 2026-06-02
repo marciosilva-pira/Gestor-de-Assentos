@@ -76,7 +76,11 @@ export default function Home() {
       const lista = snapshot.docs.map((doc) => ({
         id: doc.id,
         url: doc.data().url,
+        nome: doc.data().nome || "",
       }));
+
+      lista.sort((a, b) => a.nome.localeCompare(b.nome));
+
       setFotos(lista);
     }
 
