@@ -14,7 +14,6 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
-
 const COLS = 22;
 const ROWS = 6;
 const GRID_COLS = 25;
@@ -27,29 +26,38 @@ export default function Home() {
   const [carregando, setCarregando] = useState(false);
   const [progresso, setProgresso] = useState(0);
 
-  // ✅ CARREGAR MAPA DO FIREBASE
+  // ✅ RESPONSIVIDADE
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
   useEffect(() => {
-    async function carregarMapa() {
-      const ref = doc(db, "config", "mapa");
-
-      const snap = await getDoc(ref);
-
-      if (snap.exists()) {
-        setMapa(snap.data());
-      }
+    function handleResize() {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1200);
     }
 
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ✅ CARREGAR MAPA
+  useEffect(() => {
+    async function carregarMapa() {
+      const snap = await getDoc(doc(db, "config", "mapa"));
+      if (snap.exists()) setMapa(snap.data());
+    }
     carregarMapa();
   }, []);
 
-
-  // ✅ Listener em tempo real (Firestore)
-
+  // ✅ tempo real
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "fotos"), (snapshot) => {
-      const lista = snapshot.docs.map(doc => ({
+      const lista = snapshot.docs.map((doc) => ({
         id: doc.id,
-        url: doc.data().url
+        url: doc.data().url,
       }));
       setFotos(lista);
     });
@@ -57,44 +65,30 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-
-
-
-  // ✅ CARREGAR FOTOS DO FIREBASE
+  // ✅ carregar inicial
   useEffect(() => {
     async function carregarFotosBanco() {
       const snapshot = await getDocs(collection(db, "fotos"));
-      const lista = snapshot.docs.map(doc => ({
+      const lista = snapshot.docs.map((doc) => ({
         id: doc.id,
-        url: doc.data().url
+        url: doc.data().url,
       }));
       setFotos(lista);
-
     }
 
     carregarFotosBanco();
   }, []);
 
-
-  // ✅ FUNÇÃO PARA EXCLUIR FOTO
   async function excluirFoto(id: string) {
     if (!confirm("Deseja excluir esta foto?")) return;
-
     await deleteDoc(doc(db, "fotos", id));
   }
 
-
-  // ✅ SALVAR MAPA NO FIREBASE
   async function salvarMapaFirebase() {
     await setDoc(doc(db, "config", "mapa"), mapa);
     alert("✅ Mapa salvo no banco!");
   }
 
-
-
-
-
-  // ✅ Upload + salvar no Firebase
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files) return;
@@ -107,10 +101,13 @@ export default function Home() {
       formData.append("file", file);
       formData.append("upload_preset", "upload_cadeiras");
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/dous0lse8/image/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
 
@@ -121,7 +118,6 @@ export default function Home() {
       }
 
       setProgresso(Math.round(((index + 1) / files.length) * 100));
-
       return data.secure_url;
     });
 
@@ -129,7 +125,7 @@ export default function Home() {
 
     setFotos((prev) => [
       ...prev,
-      ...urls.map(url => ({ id: crypto.randomUUID(), url }))
+      ...urls.map((url) => ({ id: crypto.randomUUID(), url })),
     ]);
 
     setCarregando(false);
@@ -197,8 +193,9 @@ export default function Home() {
             setMapa(novo);
           }}
           style={{
-            width: "80%",
-            aspectRatio: "1/1",
+            width: isMobile ? "100%" : "80%",
+            maxWidth: isMobile ? 50 : 70,
+            aspectRatio: "1",
             background: "#2B2B2B",
             border: "1px solid #555",
             position: "relative",
@@ -214,7 +211,7 @@ export default function Home() {
               width: "100%",
               textAlign: "center",
               color: "white",
-              fontSize: 14,
+              fontSize: isMobile ? 10 : 14,
               fontWeight: "bold",
             }}
           >
@@ -241,59 +238,74 @@ export default function Home() {
       style={{
         background: "#1E1E1E",
         minHeight: "100vh",
-        padding: "40px 20px 20px 20px",
+        padding: isMobile ? 10 : 20,
         color: "white",
       }}
     >
       {/* GRID */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
-          `,
-          rowGap: 20,
-          columnGap: 6,
-        }}
-      >
-        {cadeiras}
+      <div style={{ overflowX: isMobile ? "hidden" : "auto" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile
+              ? "repeat(4,1fr)"
+              : isTablet
+              ? "repeat(10,1fr)"
+              : `
+              repeat(5, 1fr) 0.2fr
+              repeat(6, 1fr) 0.2fr
+              repeat(6, 1fr) 0.2fr
+              repeat(5, 1fr)
+            `,
+            rowGap: isMobile ? 10 : 20,
+            columnGap: isMobile ? 4 : 6,
+            minWidth: isTablet ? 1000 : undefined,
+          }}
+        >
+          {cadeiras}
+        </div>
       </div>
 
       {/* TÍTULOS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `
+      {!isMobile && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `
             repeat(5, 1fr) 0.2fr
             repeat(6, 1fr) 0.2fr
             repeat(6, 1fr) 0.2fr
             repeat(5, 1fr)
           `,
-          marginTop: 6,
-          marginBottom: 20,
-          fontSize: 16,
-          fontWeight: "bold",
-          color: "#ccc",
-        }}
-      >
-        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-          3 - CADEIRA (ESQUERDO)
-        </div>
+            marginTop: 6,
+            marginBottom: 20,
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "#ccc",
+          }}
+        >
+          <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+            3 - CADEIRA (ESQUERDO)
+          </div>
 
-        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-          2 - TRIBUNA
-        </div>
+          <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+            2 - TRIBUNA
+          </div>
 
-        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-          4 - MESA (DIREITO)
+          <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+            4 - MESA (DIREITO)
+          </div>
         </div>
-      </div>
+      )}
 
       {/* BOTÕES */}
-      <div style={{ display: "flex", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
         <input
           id="uploadFotos"
           type="file"
@@ -312,8 +324,6 @@ export default function Home() {
             color: "white",
             padding: "10px 20px",
             borderRadius: 5,
-            cursor: carregando ? "not-allowed" : "pointer",
-            opacity: carregando ? 0.6 : 1,
           }}
         >
           Carregar Fotos
@@ -338,21 +348,16 @@ export default function Home() {
             color: "white",
             padding: "10px 20px",
             borderRadius: 5,
-            cursor: "pointer",
           }}
         >
           Salvar Layout
         </button>
-
-
-
-
       </div>
 
       {/* LOADING */}
       {carregando && (
         <div style={{ marginTop: 15 }}>
-          ⏳ Carregando... {progresso}%
+          ⏳ {progresso}%
         </div>
       )}
 
@@ -369,17 +374,13 @@ export default function Home() {
         }}
       >
         {fotos.map((foto) => (
-          <div
-            key={foto.id}
-            style={{ position: "relative" }}
-          >
-            {/* IMAGEM */}
+          <div key={foto.id} style={{ position: "relative" }}>
             <img
               src={foto.url}
               onClick={() => setSelecionada(foto.url)}
               style={{
-                width: 60,
-                height: 60,
+                width: isMobile ? 50 : 60,
+                height: isMobile ? 50 : 60,
                 objectFit: "cover",
                 borderRadius: 6,
                 cursor: "pointer",
@@ -390,7 +391,6 @@ export default function Home() {
               }}
             />
 
-            {/* BOTÃO EXCLUIR */}
             <button
               onClick={() => excluirFoto(foto.id)}
               style={{
@@ -405,7 +405,6 @@ export default function Home() {
                 height: 20,
                 cursor: "pointer",
                 fontSize: 12,
-                fontWeight: "bold",
               }}
             >
               ✕
@@ -413,7 +412,6 @@ export default function Home() {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
