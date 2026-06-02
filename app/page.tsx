@@ -23,10 +23,12 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
 
+  // ✅ NOVO: controle de drag
+  const [dragOrigem, setDragOrigem] = useState<number | null>(null);
+
   const [carregando, setCarregando] = useState(false);
   const [progresso, setProgresso] = useState(0);
 
-  // ✅ RESPONSIVIDADE
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
 
@@ -126,7 +128,7 @@ export default function Home() {
       if (data.secure_url) {
         await addDoc(collection(db, "fotos"), {
           url: data.secure_url,
-          nome: file.name, // 👈 EXTRA (importante)
+          nome: file.name,
         });
       }
 
@@ -138,7 +140,6 @@ export default function Home() {
     setCarregando(false);
   }
 
-
   function limparCadeiras() {
     setMapa({});
     setSelecionada(null);
@@ -147,15 +148,7 @@ export default function Home() {
   function clicarCadeira(num: number) {
     const novo = { ...mapa };
 
-    // 👉 Modo mover (clicar numa cadeira já ocupada sem ter selecionado nada)
-    if (!selecionada && novo[num]) {
-      setSelecionada(novo[num]);
-      delete novo[num];
-      setMapa(novo);
-      return;
-    }
-
-    // 👉 Modo colocar foto (AGORA PERMITE REPETIR)
+    // ✅ SOMENTE colocar foto selecionada
     if (selecionada) {
       novo[num] = selecionada;
       setMapa(novo);
@@ -163,6 +156,30 @@ export default function Home() {
     }
   }
 
+
+  // ✅ NOVO: drop
+  function onDropCadeira(destino: number) {
+    if (dragOrigem === null) return;
+
+    const novo = { ...mapa };
+
+    const origemFoto = novo[dragOrigem];
+    const destinoFoto = novo[destino];
+
+    if (!origemFoto) return;
+
+    // troca ou move
+    if (destinoFoto) {
+      novo[dragOrigem] = destinoFoto;
+    } else {
+      delete novo[dragOrigem];
+    }
+
+    novo[destino] = origemFoto;
+
+    setMapa(novo);
+    setDragOrigem(null);
+  }
 
   const cadeiras = [];
 
@@ -196,12 +213,10 @@ export default function Home() {
             alignItems: "center",
           }}
         >
-          {/* 🔢 NÚMERO FORA */}
           <span
             style={{
               color: "#ccc",
               fontSize: isMobile ? 12 : 14,
-              fontWeight: "normal",
               marginBottom: 3,
               letterSpacing: 3,
             }}
@@ -209,7 +224,6 @@ export default function Home() {
             {cadeiraNum}
           </span>
 
-          {/* 🪑 CADEIRA */}
           <div
             onClick={() => clicarCadeira(cadeiraNum)}
             onContextMenu={(e) => {
@@ -218,6 +232,8 @@ export default function Home() {
               delete novo[cadeiraNum];
               setMapa(novo);
             }}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => onDropCadeira(cadeiraNum)}
             style={{
               width: "100%",
               maxWidth: isMobile ? 50 : 70,
@@ -233,6 +249,8 @@ export default function Home() {
             {foto && (
               <img
                 src={foto}
+                draggable
+                onDragStart={() => setDragOrigem(cadeiraNum)}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -270,10 +288,8 @@ export default function Home() {
               repeat(6, 1fr) 0.2fr
               repeat(5, 1fr)
             `,
-
             rowGap: isMobile ? 5 : 10,
             columnGap: isMobile ? 0 : 1,
-            /*columnGap: isMobile ? 4 : 6,*/
             minWidth: isTablet ? 1000 : undefined,
           }}
         >
