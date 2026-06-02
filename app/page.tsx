@@ -1,6 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { db } from "@/lib/firebase";
+
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  onSnapshot,
+} from "firebase/firestore";
+
 
 const COLS = 22;
 const ROWS = 6;
@@ -9,21 +22,79 @@ const GRID_COLS = 25;
 export default function Home() {
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
-  const [fotos, setFotos] = useState<string[]>([]);
+  const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
+
   const [carregando, setCarregando] = useState(false);
   const [progresso, setProgresso] = useState(0);
 
-  // ✅ Carregar do localStorage
+  // ✅ CARREGAR MAPA DO FIREBASE
   useEffect(() => {
-    const salvo = localStorage.getItem("mapa");
-    if (salvo) setMapa(JSON.parse(salvo));
+    async function carregarMapa() {
+      const ref = doc(db, "config", "mapa");
+
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        setMapa(snap.data());
+      }
+    }
+
+    carregarMapa();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("mapa", JSON.stringify(mapa));
-  }, [mapa]);
 
-  // ✅ Upload com progresso
+  // ✅ Listener em tempo real (Firestore)
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "fotos"), (snapshot) => {
+      const lista = snapshot.docs.map(doc => ({
+        id: doc.id,
+        url: doc.data().url
+      }));
+      setFotos(lista);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+
+
+  // ✅ CARREGAR FOTOS DO FIREBASE
+  useEffect(() => {
+    async function carregarFotosBanco() {
+      const snapshot = await getDocs(collection(db, "fotos"));
+      const lista = snapshot.docs.map(doc => ({
+        id: doc.id,
+        url: doc.data().url
+      }));
+      setFotos(lista);
+
+    }
+
+    carregarFotosBanco();
+  }, []);
+
+
+  // ✅ FUNÇÃO PARA EXCLUIR FOTO
+  async function excluirFoto(id: string) {
+    if (!confirm("Deseja excluir esta foto?")) return;
+
+    await deleteDoc(doc(db, "fotos", id));
+  }
+
+
+  // ✅ SALVAR MAPA NO FIREBASE
+  async function salvarMapaFirebase() {
+    await setDoc(doc(db, "config", "mapa"), mapa);
+    alert("✅ Mapa salvo no banco!");
+  }
+
+
+
+
+
+  // ✅ Upload + salvar no Firebase
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files) return;
@@ -31,39 +102,36 @@ export default function Home() {
     setCarregando(true);
     setProgresso(0);
 
-    const total = files.length;
-    let concluidas = 0;
-    let novas: string[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
+    const uploads = Array.from(files).map(async (file, index) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "upload_cadeiras");
-      formData.append("folder", "cadeiras");
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch("https://api.cloudinary.com/v1_1/dous0lse8/image/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await res.json();
 
       if (data.secure_url) {
-        novas.push(data.secure_url);
+        await addDoc(collection(db, "fotos"), {
+          url: data.secure_url,
+        });
       }
 
-      // ✅ Atualiza progresso
-      concluidas++;
-      const percent = Math.round((concluidas / total) * 100);
-      setProgresso(percent);
-    }
+      setProgresso(Math.round(((index + 1) / files.length) * 100));
 
-    setFotos((prev) => [...prev, ...novas]);
+      return data.secure_url;
+    });
+
+    const urls = await Promise.all(uploads);
+
+    setFotos((prev) => [
+      ...prev,
+      ...urls.map(url => ({ id: crypto.randomUUID(), url }))
+    ]);
+
     setCarregando(false);
   }
 
@@ -72,11 +140,9 @@ export default function Home() {
     setSelecionada(null);
   }
 
-  // ✅ mover + adicionar
   function clicarCadeira(num: number) {
     const novo = { ...mapa };
 
-    // pegar da cadeira (mover)
     if (!selecionada && novo[num]) {
       setSelecionada(novo[num]);
       delete novo[num];
@@ -85,7 +151,6 @@ export default function Home() {
     }
 
     if (selecionada) {
-      // remove de qualquer outra cadeira
       Object.keys(novo).forEach((key) => {
         if (novo[Number(key)] === selecionada) {
           delete novo[Number(key)];
@@ -94,7 +159,7 @@ export default function Home() {
 
       novo[num] = selecionada;
       setMapa(novo);
-      setSelecionada(null); // ✅ evita mover sem querer
+      setSelecionada(null);
     }
   }
 
@@ -261,51 +326,33 @@ export default function Home() {
             color: "white",
             padding: "10px 20px",
             borderRadius: 5,
-            cursor: "pointer",
           }}
         >
           Limpar Cadeiras
         </button>
-      </div>
 
-      {/* ✅ LOADING COM % + BARRA */}
-      {carregando && (
-        <div
+        <button
+          onClick={salvarMapaFirebase}
           style={{
-            marginTop: 15,
-            padding: 15,
-            background: "#222",
-            borderRadius: 6,
+            background: "#28a745",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: 5,
+            cursor: "pointer",
           }}
         >
-          <div
-            style={{
-              textAlign: "center",
-              color: "#00FFAA",
-              fontWeight: "bold",
-              marginBottom: 10,
-            }}
-          >
-            ⏳ Carregando imagens... {progresso}%
-          </div>
+          Salvar Layout
+        </button>
 
-          <div
-            style={{
-              height: 8,
-              background: "#444",
-              borderRadius: 5,
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                width: `${progresso}%`,
-                height: "100%",
-                background: "#00FFAA",
-                transition: "0.3s",
-              }}
-            />
-          </div>
+
+
+
+      </div>
+
+      {/* LOADING */}
+      {carregando && (
+        <div style={{ marginTop: 15 }}>
+          ⏳ Carregando... {progresso}%
         </div>
       )}
 
@@ -321,25 +368,52 @@ export default function Home() {
           borderRadius: 6,
         }}
       >
-        {fotos.map((src, index) => (
-          <img
-            key={index}
-            src={src}
-            onClick={() => setSelecionada(src)}
-            style={{
-              width: 60,
-              height: 60,
-              objectFit: "cover",
-              borderRadius: 6,
-              cursor: "pointer",
-              border:
-                selecionada === src
-                  ? "3px solid red"
-                  : "1px solid #444",
-            }}
-          />
+        {fotos.map((foto) => (
+          <div
+            key={foto.id}
+            style={{ position: "relative" }}
+          >
+            {/* IMAGEM */}
+            <img
+              src={foto.url}
+              onClick={() => setSelecionada(foto.url)}
+              style={{
+                width: 60,
+                height: 60,
+                objectFit: "cover",
+                borderRadius: 6,
+                cursor: "pointer",
+                border:
+                  selecionada === foto.url
+                    ? "3px solid red"
+                    : "1px solid #444",
+              }}
+            />
+
+            {/* BOTÃO EXCLUIR */}
+            <button
+              onClick={() => excluirFoto(foto.id)}
+              style={{
+                position: "absolute",
+                top: -5,
+                right: -5,
+                background: "#dc3545",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                width: 20,
+                height: 20,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: "bold",
+              }}
+            >
+              ✕
+            </button>
+          </div>
         ))}
       </div>
+
     </div>
   );
 }
