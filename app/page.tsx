@@ -316,6 +316,7 @@ return (
           color: "white",
           padding: "10px 20px",
           borderRadius: 5,
+          cursor: "pointer",
         }}
       >
         Carregar Fotos
@@ -328,6 +329,7 @@ return (
           color: "white",
           padding: "10px 20px",
           borderRadius: 5,
+          cursor: "pointer",
         }}
       >
         Limpar Cadeiras
@@ -340,6 +342,7 @@ return (
           color: "white",
           padding: "10px 20px",
           borderRadius: 5,
+          cursor: "pointer",
         }}
       >
         Salvar Layout
