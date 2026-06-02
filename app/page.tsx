@@ -190,49 +190,57 @@ export default function Home() {
       cadeiras.push(
         <div
           key={i + "-" + j}
-          onClick={() => clicarCadeira(cadeiraNum)}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            const novo = { ...mapa };
-            delete novo[cadeiraNum];
-            setMapa(novo);
-          }}
           style={{
-            width: isMobile ? "100%" : "80%",
-            maxWidth: isMobile ? 50 : 70,
-            aspectRatio: "1",
-            background: "#2B2B2B",
-            border: "1px solid #555",
-            position: "relative",
-            cursor: "pointer",
-            margin: "0 auto",
-            borderRadius: 6,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
+          {/* 🔢 NÚMERO FORA */}
           <span
             style={{
-              position: "absolute",
-              bottom: "102%",
-              width: "100%",
-              textAlign: "center",
-              color: "white",
-              fontSize: isMobile ? 10 : 14,
-              fontWeight: "bold",
+              color: "#ccc",
+              fontSize: isMobile ? 12 : 14,
+              fontWeight: "normal",
+              marginBottom: 3,
+              letterSpacing: 3,
             }}
           >
             {cadeiraNum}
           </span>
 
-          {foto && (
-            <img
-              src={foto}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          )}
+          {/* 🪑 CADEIRA */}
+          <div
+            onClick={() => clicarCadeira(cadeiraNum)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              const novo = { ...mapa };
+              delete novo[cadeiraNum];
+              setMapa(novo);
+            }}
+            style={{
+              width: "100%",
+              maxWidth: isMobile ? 50 : 70,
+              aspectRatio: "1",
+              background: "#2B2B2B",
+              border: "1px solid #555",
+              position: "relative",
+              cursor: "pointer",
+              borderRadius: 6,
+              overflow: "hidden",
+            }}
+          >
+            {foto && (
+              <img
+                src={foto}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            )}
+          </div>
         </div>
       );
     }
@@ -262,8 +270,10 @@ export default function Home() {
               repeat(6, 1fr) 0.2fr
               repeat(5, 1fr)
             `,
-            rowGap: isMobile ? 10 : 20,
-            columnGap: isMobile ? 4 : 6,
+
+            rowGap: isMobile ? 5 : 10,
+            columnGap: isMobile ? 0 : 1,
+            /*columnGap: isMobile ? 4 : 6,*/
             minWidth: isTablet ? 1000 : undefined,
           }}
         >
