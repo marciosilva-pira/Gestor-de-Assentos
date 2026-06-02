@@ -89,167 +89,159 @@ export default function Home() {
     alert("✅ Mapa salvo no banco!");
   }
 
-  async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files) return;
+ async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
+  const files = e.target.files;
+  if (!files) return;
 
-    setCarregando(true);
-    setProgresso(0);
+  setCarregando(true);
+  setProgresso(0);
 
-    const uploads = Array.from(files).map(async (file, index) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "upload_cadeiras");
+  const uploads = Array.from(files).map(async (file, index) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "upload_cadeiras");
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.secure_url) {
-        await addDoc(collection(db, "fotos"), {
-          url: data.secure_url,
-        });
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dous0lse8/image/upload",
+      {
+        method: "POST",
+        body: formData,
       }
+    );
 
-      setProgresso(Math.round(((index + 1) / files.length) * 100));
-      return data.secure_url;
-    });
+    const data = await res.json();
 
-    const urls = await Promise.all(uploads);
+    if (data.secure_url) {
+      await addDoc(collection(db, "fotos"), {
+        url: data.secure_url,
+      });
+    }
 
-    setFotos((prev) => [
-      ...prev,
-      ...urls.map((url) => ({ id: crypto.randomUUID(), url })),
-    ]);
+    setProgresso(Math.round(((index + 1) / files.length) * 100));
+  });
 
-    setCarregando(false);
+  await Promise.all(uploads);
+
+  setCarregando(false);
+}
+
+
+function limparCadeiras() {
+  setMapa({});
+  setSelecionada(null);
+}
+
+function clicarCadeira(num: number) {
+  const novo = { ...mapa };
+
+  // 👉 Modo mover (clicar numa cadeira já ocupada sem ter selecionado nada)
+  if (!selecionada && novo[num]) {
+    setSelecionada(novo[num]);
+    delete novo[num];
+    setMapa(novo);
+    return;
   }
 
-  function limparCadeiras() {
-    setMapa({});
+  // 👉 Modo colocar foto (AGORA PERMITE REPETIR)
+  if (selecionada) {
+    novo[num] = selecionada;
+    setMapa(novo);
     setSelecionada(null);
   }
+}
 
-  function clicarCadeira(num: number) {
-    const novo = { ...mapa };
 
-    if (!selecionada && novo[num]) {
-      setSelecionada(novo[num]);
-      delete novo[num];
-      setMapa(novo);
-      return;
+const cadeiras = [];
+
+for (let i = 0; i < ROWS; i++) {
+  for (let j = 0; j < GRID_COLS; j++) {
+    const corredores = [5, 12, 19];
+
+    if (corredores.includes(j)) {
+      cadeiras.push(<div key={`gap-${i}-${j}`} />);
+      continue;
     }
 
-    if (selecionada) {
-      Object.keys(novo).forEach((key) => {
-        if (novo[Number(key)] === selecionada) {
-          delete novo[Number(key)];
-        }
-      });
+    let col;
+    if (j < 5) col = j;
+    else if (j < 12) col = j - 1;
+    else if (j < 19) col = j - 2;
+    else col = j - 3;
 
-      novo[num] = selecionada;
-      setMapa(novo);
-      setSelecionada(null);
-    }
-  }
+    let linha = ROWS - 1 - i;
+    let numeroLinha = linha * COLS + col + 1;
+    let cadeiraNum = numeroLinha < 90 ? numeroLinha : numeroLinha + 10;
 
-  const cadeiras = [];
+    const foto = mapa[cadeiraNum];
 
-  for (let i = 0; i < ROWS; i++) {
-    for (let j = 0; j < GRID_COLS; j++) {
-      const corredores = [5, 12, 19];
-
-      if (corredores.includes(j)) {
-        cadeiras.push(<div key={`gap-${i}-${j}`} />);
-        continue;
-      }
-
-      let col;
-      if (j < 5) col = j;
-      else if (j < 12) col = j - 1;
-      else if (j < 19) col = j - 2;
-      else col = j - 3;
-
-      let linha = ROWS - 1 - i;
-      let numeroLinha = linha * COLS + col + 1;
-      let cadeiraNum = numeroLinha < 90 ? numeroLinha : numeroLinha + 10;
-
-      const foto = mapa[cadeiraNum];
-
-      cadeiras.push(
-        <div
-          key={i + "-" + j}
-          onClick={() => clicarCadeira(cadeiraNum)}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            const novo = { ...mapa };
-            delete novo[cadeiraNum];
-            setMapa(novo);
-          }}
+    cadeiras.push(
+      <div
+        key={i + "-" + j}
+        onClick={() => clicarCadeira(cadeiraNum)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          const novo = { ...mapa };
+          delete novo[cadeiraNum];
+          setMapa(novo);
+        }}
+        style={{
+          width: isMobile ? "100%" : "80%",
+          maxWidth: isMobile ? 50 : 70,
+          aspectRatio: "1",
+          background: "#2B2B2B",
+          border: "1px solid #555",
+          position: "relative",
+          cursor: "pointer",
+          margin: "0 auto",
+          borderRadius: 6,
+        }}
+      >
+        <span
           style={{
-            width: isMobile ? "100%" : "80%",
-            maxWidth: isMobile ? 50 : 70,
-            aspectRatio: "1",
-            background: "#2B2B2B",
-            border: "1px solid #555",
-            position: "relative",
-            cursor: "pointer",
-            margin: "0 auto",
-            borderRadius: 6,
+            position: "absolute",
+            bottom: "102%",
+            width: "100%",
+            textAlign: "center",
+            color: "white",
+            fontSize: isMobile ? 10 : 14,
+            fontWeight: "bold",
           }}
         >
-          <span
+          {cadeiraNum}
+        </span>
+
+        {foto && (
+          <img
+            src={foto}
             style={{
-              position: "absolute",
-              bottom: "102%",
               width: "100%",
-              textAlign: "center",
-              color: "white",
-              fontSize: isMobile ? 10 : 14,
-              fontWeight: "bold",
+              height: "100%",
+              objectFit: "contain",
             }}
-          >
-            {cadeiraNum}
-          </span>
-
-          {foto && (
-            <img
-              src={foto}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          )}
-        </div>
-      );
-    }
+          />
+        )}
+      </div>
+    );
   }
+}
 
-  return (
-    <div
-      style={{
-        background: "#1E1E1E",
-        minHeight: "100vh",
-        padding: isMobile ? 10 : 20,
-        color: "white",
-      }}
-    >
-      {/* GRID */}
-      <div style={{ overflowX: isMobile ? "hidden" : "auto" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "repeat(4,1fr)"
-              : isTablet
+return (
+  <div
+    style={{
+      background: "#1E1E1E",
+      minHeight: "100vh",
+      padding: isMobile ? 10 : 20,
+      color: "white",
+    }}
+  >
+    {/* GRID */}
+    <div style={{ overflowX: isMobile ? "hidden" : "auto" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile
+            ? "repeat(4,1fr)"
+            : isTablet
               ? "repeat(10,1fr)"
               : `
               repeat(5, 1fr) 0.2fr
@@ -257,161 +249,161 @@ export default function Home() {
               repeat(6, 1fr) 0.2fr
               repeat(5, 1fr)
             `,
-            rowGap: isMobile ? 10 : 20,
-            columnGap: isMobile ? 4 : 6,
-            minWidth: isTablet ? 1000 : undefined,
-          }}
-        >
-          {cadeiras}
-        </div>
+          rowGap: isMobile ? 10 : 20,
+          columnGap: isMobile ? 4 : 6,
+          minWidth: isTablet ? 1000 : undefined,
+        }}
+      >
+        {cadeiras}
       </div>
+    </div>
 
-      {/* TÍTULOS */}
-      {!isMobile && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `
+    {/* TÍTULOS */}
+    {!isMobile && (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `
             repeat(5, 1fr) 0.2fr
             repeat(6, 1fr) 0.2fr
             repeat(6, 1fr) 0.2fr
             repeat(5, 1fr)
           `,
-            marginTop: 6,
-            marginBottom: 20,
-            fontSize: 16,
-            fontWeight: "bold",
-            color: "#ccc",
-          }}
-        >
-          <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
-            3 - CADEIRA (ESQUERDO)
-          </div>
-
-          <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
-            2 - TRIBUNA
-          </div>
-
-          <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
-            4 - MESA (DIREITO)
-          </div>
-        </div>
-      )}
-
-      {/* BOTÕES */}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          flexDirection: isMobile ? "column" : "row",
+          marginTop: 6,
+          marginBottom: 20,
+          fontSize: 16,
+          fontWeight: "bold",
+          color: "#ccc",
         }}
       >
-        <input
-          id="uploadFotos"
-          type="file"
-          multiple
-          onChange={carregarFotos}
-          style={{ display: "none" }}
-        />
-
-        <button
-          onClick={() =>
-            document.getElementById("uploadFotos")?.click()
-          }
-          disabled={carregando}
-          style={{
-            background: "#007BFF",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 5,
-          }}
-        >
-          Carregar Fotos
-        </button>
-
-        <button
-          onClick={limparCadeiras}
-          style={{
-            background: "#dc3545",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 5,
-          }}
-        >
-          Limpar Cadeiras
-        </button>
-
-        <button
-          onClick={salvarMapaFirebase}
-          style={{
-            background: "#28a745",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 5,
-          }}
-        >
-          Salvar Layout
-        </button>
-      </div>
-
-      {/* LOADING */}
-      {carregando && (
-        <div style={{ marginTop: 15 }}>
-          ⏳ {progresso}%
+        <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+          3 - CADEIRA (ESQUERDO)
         </div>
-      )}
 
-      {/* MINIATURAS */}
-      <div
+        <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+          2 - TRIBUNA
+        </div>
+
+        <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+          4 - MESA (DIREITO)
+        </div>
+      </div>
+    )}
+
+    {/* BOTÕES */}
+    <div
+      style={{
+        display: "flex",
+        gap: 10,
+        flexDirection: isMobile ? "column" : "row",
+      }}
+    >
+      <input
+        id="uploadFotos"
+        type="file"
+        multiple
+        onChange={carregarFotos}
+        style={{ display: "none" }}
+      />
+
+      <button
+        onClick={() =>
+          document.getElementById("uploadFotos")?.click()
+        }
+        disabled={carregando}
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 10,
-          marginTop: 15,
-          padding: 10,
-          background: "#111",
-          borderRadius: 6,
+          background: "#007BFF",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: 5,
         }}
       >
-        {fotos.map((foto) => (
-          <div key={foto.id} style={{ position: "relative" }}>
-            <img
-              src={foto.url}
-              onClick={() => setSelecionada(foto.url)}
-              style={{
-                width: isMobile ? 50 : 60,
-                height: isMobile ? 50 : 60,
-                objectFit: "cover",
-                borderRadius: 6,
-                cursor: "pointer",
-                border:
-                  selecionada === foto.url
-                    ? "3px solid red"
-                    : "1px solid #444",
-              }}
-            />
+        Carregar Fotos
+      </button>
 
-            <button
-              onClick={() => excluirFoto(foto.id)}
-              style={{
-                position: "absolute",
-                top: -5,
-                right: -5,
-                background: "#dc3545",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: 20,
-                height: 20,
-                cursor: "pointer",
-                fontSize: 12,
-              }}
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
+      <button
+        onClick={limparCadeiras}
+        style={{
+          background: "#dc3545",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: 5,
+        }}
+      >
+        Limpar Cadeiras
+      </button>
+
+      <button
+        onClick={salvarMapaFirebase}
+        style={{
+          background: "#28a745",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: 5,
+        }}
+      >
+        Salvar Layout
+      </button>
     </div>
-  );
+
+    {/* LOADING */}
+    {carregando && (
+      <div style={{ marginTop: 15 }}>
+        ⏳ {progresso}%
+      </div>
+    )}
+
+    {/* MINIATURAS */}
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 10,
+        marginTop: 15,
+        padding: 10,
+        background: "#111",
+        borderRadius: 6,
+      }}
+    >
+      {fotos.map((foto) => (
+        <div key={foto.id} style={{ position: "relative" }}>
+          <img
+            src={foto.url}
+            onClick={() => setSelecionada(foto.url)}
+            style={{
+              width: isMobile ? 50 : 60,
+              height: isMobile ? 50 : 60,
+              objectFit: "cover",
+              borderRadius: 6,
+              cursor: "pointer",
+              border:
+                selecionada === foto.url
+                  ? "3px solid red"
+                  : "1px solid #444",
+            }}
+          />
+
+          <button
+            onClick={() => excluirFoto(foto.id)}
+            style={{
+              position: "absolute",
+              top: -5,
+              right: -5,
+              background: "#dc3545",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: 20,
+              height: 20,
+              cursor: "pointer",
+              fontSize: 12,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 }
