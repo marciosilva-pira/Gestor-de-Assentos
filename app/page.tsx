@@ -101,18 +101,25 @@ export default function Home() {
 
 
   async function irParaPreset(numero: number) {
-    try {
-      await fetch("/api/preset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ preset: numero }),
-      });
-    } catch (err) {
-      console.error("Erro ao mover câmera", err);
-    }
+  console.log("📸 Enviando preset:", numero); // 👈 AQUI
+
+  try {
+    const res = await fetch("/api/preset", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ preset: numero }),
+    });
+
+    const data = await res.json();
+
+    console.log("✅ Resposta da API:", data); // 👈 AQUI
+  } catch (err) {
+    console.error("❌ Erro ao mover câmera", err);
   }
+}
+
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
