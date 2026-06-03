@@ -90,13 +90,28 @@ export default function Home() {
   }, []);
 
   async function excluirFoto(id: string) {
-    if (!confirm("Deseja excluir esta foto?")) return;
+    if (!confirm("Deseja excluir esta foto do Banco de Dados?")) return;
     await deleteDoc(doc(db, "fotos", id));
   }
 
   async function salvarMapaFirebase() {
     await setDoc(doc(db, "config", "mapa"), mapa);
     alert("✅ Mapa salvo no banco!");
+  }
+
+
+  async function irParaPreset(numero: number) {
+    try {
+      await fetch("/api/preset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ preset: numero }),
+      });
+    } catch (err) {
+      console.error("Erro ao mover câmera", err);
+    }
   }
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
@@ -148,13 +163,24 @@ export default function Home() {
   function clicarCadeira(num: number) {
     const novo = { ...mapa };
 
-    // ✅ SOMENTE colocar foto selecionada
+    const temPessoa = mapa[num]; // ✅ verifica se tem foto na cadeira
+
+    // 👉 Só dispara câmera se:
+    // 1. NÃO está adicionando foto
+    // 2. E a cadeira TEM alguém
+    if (!selecionada && temPessoa) {
+      irParaPreset(num);
+      return;
+    }
+
+    // comportamento atual (colocar foto)
     if (selecionada) {
       novo[num] = selecionada;
       setMapa(novo);
       setSelecionada(null);
     }
   }
+
 
 
   function removerFotoCadeira(num: number) {
@@ -265,43 +291,43 @@ export default function Home() {
             )}
 
 
-  {foto && (
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      removerFotoCadeira(cadeiraNum);
-    }}
-    style={{
-      position: "absolute",
-      top: -12,
-      right: -10,
-      background: "#1f1f1f", // ✅ fundo escuro
-      /*border: "none",*/
-      border: "1px solid #444",
+            {foto && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removerFotoCadeira(cadeiraNum);
+                }}
+                style={{
+                  position: "absolute",
+                  top: -12,
+                  right: -10,
+                  background: "#1f1f1f", // ✅ fundo escuro
+                  /*border: "none",*/
+                  border: "1px solid #444",
 
-      borderRadius: "50%",
-      width: 30,
-      height: 30,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 10,
-      boxShadow: "0 3px 8px rgba(0,0,0,0.6)",
-      padding: 0,
-    }}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"   // ✅ aumentou só o ícone
-      height="22"
-      viewBox="0 0 24 24"
-      fill="white"
-    >
-      <path d="M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v10h-2V9zm4 0h2v10h-2V9zM7 9h2v10H7V9z"/>
-    </svg>
-  </button>
-)}
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10,
+                  boxShadow: "0 3px 8px rgba(0,0,0,0.6)",
+                  padding: 0,
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"   // ✅ aumentou só o ícone
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                >
+                  <path d="M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v10h-2V9zm4 0h2v10h-2V9zM7 9h2v10H7V9z" />
+                </svg>
+              </button>
+            )}
 
 
 
