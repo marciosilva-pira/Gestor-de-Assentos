@@ -101,24 +101,24 @@ export default function Home() {
 
 
   async function irParaPreset(numero: number) {
-  console.log("📸 Enviando preset:", numero); // 👈 AQUI
+    console.log("📸 Enviando preset:", numero); // 👈 AQUI
 
-  try {
-    const res = await fetch("/api/preset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ preset: numero }),
-    });
+    try {
+      const res = await fetch("/api/preset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ preset: numero }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    console.log("✅ Resposta da API:", data); // 👈 AQUI
-  } catch (err) {
-    console.error("❌ Erro ao mover câmera", err);
+      console.log("✅ Resposta da API:", data); // 👈 AQUI
+    } catch (err) {
+      console.error("❌ Erro ao mover câmera", err);
+    }
   }
-}
 
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
@@ -228,10 +228,19 @@ export default function Home() {
       const corredores = [5, 12, 19];
 
       if (corredores.includes(j)) {
-        cadeiras.push(<div key={`gap-${i}-${j}`} />);
+        cadeiras.push(
+          <div
+            key={`gap-${i}-${j}`}
+            style={{
+
+
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        );
         continue;
       }
-
       let col;
       if (j < 5) col = j;
       else if (j < 12) col = j - 1;
@@ -300,33 +309,33 @@ export default function Home() {
 
 
             {foto && (
-              
-<button
-  onClick={(e) => {
-    e.stopPropagation();
-    removerFotoCadeira(cadeiraNum);
-  }}
-  style={{
-    position: "absolute",
-    top: -5,
-    right: -5,
-    background: "#1f1f1f", // ✅ mantém a cor escura
-    color: "white",
-    border: "none",
-    borderRadius: "50%",
-    width: 20,
-    height: 20,
-    cursor: "pointer",
-    fontSize: 12,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 100,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.6)"
-  }}
->
-  ✕
-</button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removerFotoCadeira(cadeiraNum);
+                }}
+                style={{
+                  position: "absolute",
+                  top: -2,
+                  right: -2,
+                  background: "#1f1f1f", // ✅ mantém a cor escura
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 20,
+                  height: 20,
+                  cursor: "pointer",
+                  fontSize: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 100,
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.6)"
+                }}
+              >
+                ✕
+              </button>
 
             )}
 
@@ -350,27 +359,67 @@ export default function Home() {
     >
       {/* GRID */}
       <div style={{ overflowX: isMobile ? "hidden" : "auto" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "repeat(4,1fr)"
-              : isTablet
-                ? "repeat(10,1fr)"
-                : `
-              repeat(5, 1fr) 0.2fr
-              repeat(6, 1fr) 0.2fr
-              repeat(6, 1fr) 0.2fr
-              repeat(5, 1fr)
-            `,
-            rowGap: isMobile ? 5 : 10,
-            columnGap: isMobile ? 0 : 1,
-            minWidth: isTablet ? 1000 : undefined,
-          }}
-        >
-          {cadeiras}
+
+        <div style={{ position: "relative" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile
+                ? "repeat(4,1fr)"
+                : isTablet
+                  ? "repeat(10,1fr)"
+                  : `
+  repeat(5, 1fr) 4px
+  repeat(6, 1fr) 4px
+  repeat(6, 1fr) 4px
+  repeat(5, 1fr)
+`,
+              rowGap: isMobile ? 5 : 10,
+              columnGap: isMobile ? 0 : 1,
+              minWidth: isTablet ? 1000 : undefined,
+            }}
+          >
+            {cadeiras}
+
+            {/* LINHAS VERMELHAS */}
+
+            <div style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: "22.7%",   // posição do corredor
+              transform: "translateX(-50%)", // ✅ CENTRALIZA
+              width: 4,
+              background: "red"
+            }} />
+
+            <div style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 4,
+              background: "red"
+            }} />
+
+            <div style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: "77.3%",
+              transform: "translateX(-50%)",
+              width: 4,
+              background: "red"
+            }} />
+
+
+          </div> {/* fecha o position: relative */}
+
         </div>
       </div>
+
+
 
       {/* TÍTULOS */}
       {!isMobile && (
