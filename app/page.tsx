@@ -150,32 +150,32 @@ export default function Home() {
 
 
   async function fazerLogin() {
-  const snapshot = await getDocs(collection(db, "usuarios"));
+    const snapshot = await getDocs(collection(db, "usuarios"));
 
-  // ✅ 1. Procurar usuário pelo email (ignora maiúsculo/minúsculo)
-  const userDoc = snapshot.docs.find(doc => {
-    const data = doc.data();
-    return data.email.toLowerCase() === email.toLowerCase();
-  });
+    // ✅ 1. Procurar usuário pelo email (ignora maiúsculo/minúsculo)
+    const userDoc = snapshot.docs.find(doc => {
+      const data = doc.data();
+      return data.email.toLowerCase() === email.toLowerCase();
+    });
 
-  // ❌ Se não encontrou email
-  if (!userDoc) {
-    alert("Usuário inválido");
-    return;
+    // ❌ Se não encontrou email
+    if (!userDoc) {
+      alert("Usuário inválido");
+      return;
+    }
+
+    const data = userDoc.data();
+
+    // ❌ Se senha está errada
+    if (data.senha !== senha) {
+      alert("Senha inválida");
+      return;
+    }
+
+    // ✅ Login OK
+    setUsuario(data);
+    setTela("menu");
   }
-
-  const data = userDoc.data();
-
-  // ❌ Se senha está errada
-  if (data.senha !== senha) {
-    alert("Senha inválida");
-    return;
-  }
-
-  // ✅ Login OK
-  setUsuario(data);
-  setTela("menu");
-}
 
 
   async function cadastrarUsuario() {
@@ -592,21 +592,24 @@ export default function Home() {
             📋 Painel de Assentos
           </button>
 
-          <button
-            onClick={() => setTela("cadastro")}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginTop: 10,
-              background: "#3b82f6",
-              border: "none",
-              borderRadius: 6,
-              color: "white",
-              cursor: "pointer"
-            }}
-          >
-            👤 Cadastro de Usuário
-          </button>
+          {usuario?.admin && (
+            <button
+              onClick={() => setTela("cadastro")}
+              style={{
+                width: "100%",
+                padding: 10,
+                marginTop: 10,
+                background: "#3b82f6",
+                border: "none",
+                borderRadius: 6,
+                color: "white",
+                cursor: "pointer"
+              }}
+            >
+              👤 Cadastro de Usuário
+            </button>
+          )}
+
 
           <button
             onClick={() => {
@@ -632,6 +635,14 @@ export default function Home() {
   }
 
   if (tela === "cadastro") {
+
+    // ✅ BLOQUEIO DE ACESSO
+    if (!usuario?.admin) {
+      alert("❌ Apenas administradores podem acessar");
+      setTela("menu");
+      return null;
+    }
+
     return (
       <div style={{
         background: "#0f172a",
