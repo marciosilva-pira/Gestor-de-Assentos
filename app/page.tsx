@@ -281,7 +281,7 @@ export default function Home() {
               position: "relative",
               cursor: "pointer",
               borderRadius: 6,
-              overflow: "visible",
+              overflow: "hidden",
             }}
           >
             {foto && (
@@ -293,6 +293,7 @@ export default function Home() {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
+                  display: "block",
                 }}
               />
             )}
