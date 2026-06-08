@@ -1,6 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
+
+// ✅ ESTADOS DE LOGIN
+const inputStyle = {
+  width: "100%",
+  padding: 10,
+  marginBottom: 10,
+  borderRadius: 6,
+  border: "1px solid #334155",
+  background: "#0f172a",
+  color: "#fff"
+};
+
+const btnPrimary = {
+  width: "100%",
+  padding: 10,
+  background: "#3b82f6",
+  border: "none",
+  borderRadius: 6,
+  color: "white",
+  marginTop: 10,
+  cursor: "pointer"
+};
+
+const btnSecondary = {
+  width: "100%",
+  padding: 10,
+  background: "#334155",
+  border: "none",
+  borderRadius: 6,
+  color: "white",
+  marginTop: 5,
+  cursor: "pointer"
+};
+
+
 import { db } from "@/lib/firebase";
 
 import {
@@ -19,6 +55,21 @@ const ROWS = 6;
 const GRID_COLS = 25;
 
 export default function Home() {
+  const [tela, setTela] = useState("login");
+
+  const [usuario, setUsuario] = useState<any>(null);
+
+
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  // cadastro
+  const [novoNome, setNovoNome] = useState("");
+  const [novoEmail, setNovoEmail] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [novoAdmin, setNovoAdmin] = useState(false);
+
+
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
@@ -46,13 +97,21 @@ export default function Home() {
   }, []);
 
   // ✅ CARREGAR MAPA
-  useEffect(() => {
-    async function carregarMapa() {
-      const snap = await getDoc(doc(db, "config", "mapa"));
-      if (snap.exists()) setMapa(snap.data());
-    }
-    carregarMapa();
-  }, []);
+
+  async function carregarMapaFirebase() {
+    const snap = await getDoc(doc(db, "config", "mapa"));
+    if (snap.exists()) setMapa(snap.data());
+  }
+
+  /*
+    useEffect(() => {
+      async function carregarMapa() {
+        const snap = await getDoc(doc(db, "config", "mapa"));
+        if (snap.exists()) setMapa(snap.data());
+      }
+      carregarMapa();
+    }, []);
+  */
 
   // ✅ tempo real
   useEffect(() => {
@@ -88,6 +147,72 @@ export default function Home() {
 
     carregarFotosBanco();
   }, []);
+
+
+  async function fazerLogin() {
+  const snapshot = await getDocs(collection(db, "usuarios"));
+
+  // ✅ 1. Procurar usuário pelo email (ignora maiúsculo/minúsculo)
+  const userDoc = snapshot.docs.find(doc => {
+    const data = doc.data();
+    return data.email.toLowerCase() === email.toLowerCase();
+  });
+
+  // ❌ Se não encontrou email
+  if (!userDoc) {
+    alert("Usuário inválido");
+    return;
+  }
+
+  const data = userDoc.data();
+
+  // ❌ Se senha está errada
+  if (data.senha !== senha) {
+    alert("Senha inválida");
+    return;
+  }
+
+  // ✅ Login OK
+  setUsuario(data);
+  setTela("menu");
+}
+
+
+  async function cadastrarUsuario() {
+    // ✅ VALIDAÇÃO DOS CAMPOS
+    if (!novoNome || novoNome.trim() === "") {
+      alert("Digite o nome do usuário");
+      return;
+    }
+
+    if (!novoEmail || novoEmail.trim() === "") {
+      alert("Digite o email");
+      return;
+    }
+
+    if (!novaSenha || novaSenha.trim() === "") {
+      alert("Digite a senha");
+      return;
+    }
+
+    // ✅ SE PASSAR NA VALIDAÇÃO, SALVA
+    await addDoc(collection(db, "usuarios"), {
+      nome: novoNome.trim(),
+      email: novoEmail.trim(),
+      senha: novaSenha.trim(),
+      admin: novoAdmin,
+    });
+
+    alert("✅ Usuário criado com sucesso!");
+
+    // limpa campos (opcional)
+    setNovoNome("");
+    setNovoEmail("");
+    setNovaSenha("");
+    setNovoAdmin(false);
+
+    setTela("menu");
+  }
 
   async function excluirFoto(id: string) {
     if (!confirm("Deseja excluir esta foto do Banco de Dados?")) return;
@@ -348,6 +473,205 @@ export default function Home() {
     }
   }
 
+  if (tela === "login") {
+    return (
+      <div style={{
+        background: "#0f172a",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <div style={{
+          background: "#1e293b",
+          padding: 40,
+          borderRadius: 12,
+          width: 320
+        }}>
+          <h2 style={{ color: "white", marginBottom: 20 }}>
+            Sistema de Assentos
+          </h2>
+
+          <input
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 10,
+              borderRadius: 6,
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#fff"
+            }}
+          />
+
+          <input
+            type="password"
+            placeholder="Senha"
+            onChange={(e) => setSenha(e.target.value)}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 15,
+              borderRadius: 6,
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#fff"
+            }}
+          />
+
+          <button
+            onClick={fazerLogin}
+            style={{
+              width: "100%",
+              padding: 10,
+              background: "#3b82f6",
+              border: "none",
+              borderRadius: 6,
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            Entrar
+          </button>
+
+
+        </div>
+      </div>
+    );
+  }
+
+  if (tela === "menu") {
+    return (
+      <div style={{
+        background: "#0f172a",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <div style={{
+          background: "#1e293b",
+          padding: 40,
+          borderRadius: 12,
+          width: 320,
+          textAlign: "center"
+        }}>
+
+          {/* USUÁRIO */}
+          <div style={{
+            marginBottom: 20,
+            fontWeight: "bold",
+            borderBottom: "1px solid #334155",
+            paddingBottom: 10,
+            color: "white"
+          }}>
+            👤 {usuario?.nome}
+          </div>
+
+          {/* BOTÕES */}
+          <button
+            onClick={async () => {
+              await carregarMapaFirebase(); // ✅ correto aqui
+              setTela("painel");
+            }}
+            style={{
+              width: "100%",
+              padding: 12,
+              marginTop: 10,
+              background: "#22c55e",
+              border: "none",
+              borderRadius: 6,
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            📋 Painel de Assentos
+          </button>
+
+          <button
+            onClick={() => setTela("cadastro")}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginTop: 10,
+              background: "#3b82f6",
+              border: "none",
+              borderRadius: 6,
+              color: "white",
+              cursor: "pointer"
+            }}
+          >
+            👤 Cadastro de Usuário
+          </button>
+
+          <button
+            onClick={() => {
+              setUsuario(null);
+              setTela("login");
+            }}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginTop: 10,
+              background: "#ef4444",
+              border: "none",
+              borderRadius: 6,
+              color: "white",
+              cursor: "pointer"
+            }}
+          >
+            🚪 Sair
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (tela === "cadastro") {
+    return (
+      <div style={{
+        background: "#0f172a",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <div style={{
+          background: "#1e293b",
+          padding: 30,
+          borderRadius: 10,
+          width: 300
+        }}>
+          <h2 style={{ color: "white" }}>Cadastro</h2>
+
+          <input placeholder="Nome" onChange={(e) => setNovoNome(e.target.value)} style={inputStyle} />
+          <input placeholder="Email" onChange={(e) => setNovoEmail(e.target.value)} style={inputStyle} />
+          <input placeholder="Senha" type="password" onChange={(e) => setNovaSenha(e.target.value)} style={inputStyle} />
+
+          <label style={{ color: "white" }}>
+            <input type="checkbox" onChange={(e) => setNovoAdmin(e.target.checked)} /> Admin
+          </label>
+
+          <button onClick={cadastrarUsuario} style={btnPrimary}>
+            Salvar
+          </button>
+
+          <button onClick={() => setTela("menu")} style={btnSecondary}>
+            Voltar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+
+
+
   return (
     <div
       style={{
@@ -357,6 +681,9 @@ export default function Home() {
         color: "white",
       }}
     >
+
+
+
       {/* GRID */}
       <div style={{ overflowX: isMobile ? "hidden" : "auto" }}>
 
@@ -461,6 +788,24 @@ export default function Home() {
           flexDirection: isMobile ? "column" : "row",
         }}
       >
+
+        {/* ✅ BOTÃO VOLTAR */}
+        <button
+          onClick={() => setTela("menu")}
+          style={{
+            background: "#3b82f6",
+            color: "white",
+            height: 45,
+            padding: "10px 20px",
+            borderRadius: 5,
+            border: "none",
+            marginBottom: 10,
+            cursor: "pointer"
+          }}
+        >
+          ← Voltar ao Menu
+        </button>
+
         <input
           id="uploadFotos"
           type="file"
@@ -477,6 +822,7 @@ export default function Home() {
           style={{
             background: "#007BFF",
             color: "white",
+            height: 45,
             padding: "10px 20px",
             borderRadius: 5,
             cursor: "pointer",
@@ -490,6 +836,7 @@ export default function Home() {
           style={{
             background: "#dc3545",
             color: "white",
+            height: 45,
             padding: "10px 20px",
             borderRadius: 5,
             cursor: "pointer",
@@ -503,6 +850,7 @@ export default function Home() {
           style={{
             background: "#28a745",
             color: "white",
+            height: 45,
             padding: "10px 20px",
             borderRadius: 5,
             cursor: "pointer",
@@ -549,24 +897,27 @@ export default function Home() {
               }}
             />
 
-            <button
-              onClick={() => excluirFoto(foto.id)}
-              style={{
-                position: "absolute",
-                top: -5,
-                right: -5,
-                background: "#dc3545",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: 20,
-                height: 20,
-                cursor: "pointer",
-                fontSize: 12,
-              }}
-            >
-              ✕
-            </button>
+            {usuario?.admin && (
+              <button
+                onClick={() => excluirFoto(foto.id)}
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -5,
+                  background: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 20,
+                  height: 20,
+                  cursor: "pointer",
+                  fontSize: 12,
+                }}
+              >
+                ✕
+              </button>
+            )}
+
           </div>
         ))}
       </div>
