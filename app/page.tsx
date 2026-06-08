@@ -334,7 +334,7 @@ export default function Home() {
     e.currentTarget.style.transform = "scale(1)";
   }}
 >
-  ×
+  X
 </button>
 
             )}
