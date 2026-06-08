@@ -308,10 +308,10 @@ export default function Home() {
   }}
   style={{
     position: "absolute",
-    top: 4,
-    right: 4,
-    width: 18,
-    height: 18,
+    top: -6,
+    right: -6,
+    width: 22,
+    height: 22,
     borderRadius: "50%",
     background: "rgba(0,0,0,0.75)",
     color: "#fff",
