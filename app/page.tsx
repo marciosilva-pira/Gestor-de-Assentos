@@ -308,26 +308,33 @@ export default function Home() {
   }}
   style={{
     position: "absolute",
-    top: -12,
-    right: -10,
-    background: "#1f1f1f",
-    border: "1px solid #444",
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
     borderRadius: "50%",
-    width: 30,
-    height: 30,
-    cursor: "pointer",
+    background: "rgba(0,0,0,0.75)",
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "bold",
+    border: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 10,
-    boxShadow: "0 3px 8px rgba(0,0,0,0.6)",
-    padding: 0,
-    fontSize: 16,          // ✅ controla tamanho do X
-    fontWeight: "bold",
-    color: "white"
+    cursor: "pointer",
+    zIndex: 50,
+    transition: "all 0.2s ease"
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.background = "#ff4d4f";
+    e.currentTarget.style.transform = "scale(1.15)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.background = "rgba(0,0,0,0.75)";
+    e.currentTarget.style.transform = "scale(1)";
   }}
 >
-  ✕
+  ×
 </button>
 
             )}
