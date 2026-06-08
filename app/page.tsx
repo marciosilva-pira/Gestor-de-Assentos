@@ -300,41 +300,36 @@ export default function Home() {
 
 
             {foto && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removerFotoCadeira(cadeiraNum);
-                }}
-                style={{
-                  position: "absolute",
-                  top: -12,
-                  right: -10,
-                  background: "#1f1f1f", // ✅ fundo escuro
-                  /*border: "none",*/
-                  border: "1px solid #444",
+              
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    removerFotoCadeira(cadeiraNum);
+  }}
+  style={{
+    position: "absolute",
+    top: -12,
+    right: -10,
+    background: "#1f1f1f",
+    border: "1px solid #444",
+    borderRadius: "50%",
+    width: 30,
+    height: 30,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+    boxShadow: "0 3px 8px rgba(0,0,0,0.6)",
+    padding: 0,
+    fontSize: 16,          // ✅ controla tamanho do X
+    fontWeight: "bold",
+    color: "white"
+  }}
+>
+  ✕
+</button>
 
-                  borderRadius: "50%",
-                  width: 30,
-                  height: 30,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  zIndex: 10,
-                  boxShadow: "0 3px 8px rgba(0,0,0,0.6)",
-                  padding: 0,
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"   // ✅ aumentou só o ícone
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                >
-                  <path d="M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v10h-2V9zm4 0h2v10h-2V9zM7 9h2v10H7V9z" />
-                </svg>
-              </button>
             )}
 
 
