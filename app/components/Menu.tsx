@@ -55,7 +55,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
             {/* ✅ MENU LATERAL */}
             <div
-                className={`
+  className={`
     fixed md:relative
     top-0 left-0
     h-full md:h-auto
@@ -66,9 +66,9 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     transform transition-transform duration-300
     ${menuAberto ? "translate-x-0" : "-translate-x-full"}
     md:translate-x-0 md:transform-none
-    z-40 md:z-auto
+    z-40
   `}
-            >
+>
 
                 <h2>Gestor de Assentos</h2>
                 <div className="mb-4 pb-2 border-b border-slate-600">
