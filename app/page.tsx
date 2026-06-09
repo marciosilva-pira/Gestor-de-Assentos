@@ -170,6 +170,12 @@ export default function Home() {
 
     const data = userDoc.data();
 
+    setUsuario({
+      id: userDoc.id,
+      ...userDoc.data()
+    });
+
+
     // ❌ Se senha está errada
     if (data.senha !== senha) {
       alert("Senha inválida");
@@ -477,43 +483,48 @@ export default function Home() {
     }
   }
 
+
+console.log("TELA ATUAL:", tela);
+console.log("USUARIO:", usuario);
+
+
   if (tela === "login") {
-  return (
-    <Login
-      onLogin={(user: any) => {
-        setUsuario(user);
-        setTela("menu");
-      }}
-    />
-  );
-}
+    return (
+      <Login
+        onLogin={(user: any) => {
+          setUsuario(user);
+          setTela("menu");
+        }}
+      />
+    );
+  }
 
   if (tela === "menu") {
-  return (
-    <Menu
-      usuario={usuario}
-      onIrPainel={async () => {
-        await carregarMapaFirebase();
-        setTela("painel");
-      }}
-      onIrCadastro={() => setTela("cadastro")}
-      onSair={() => {
-        setUsuario(null);
-        setTela("login");
-      }}
-    />
-  );
-}
+    return (
+      <Menu
+        usuario={usuario}
+        onIrPainel={async () => {
+          await carregarMapaFirebase();
+          setTela("painel");
+        }}
+        onIrCadastro={() => setTela("cadastro")}
+        onSair={() => {
+          setUsuario(null);
+          setTela("login");
+        }}
+      />
+    );
+  }
 
 
   if (tela === "cadastro") {
-  return (
-    <Cadastro
-      usuario={usuario}
-      onVoltar={() => setTela("menu")}
-    />
-  );
-}
+    return (
+      <Cadastro
+        usuario={usuario}
+        onVoltar={() => setTela("menu")}
+      />
+    );
+  }
 
 
 
