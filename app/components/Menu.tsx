@@ -7,23 +7,12 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
     const [aba, setAba] = useState("");
 
-    const [menuAberto, setMenuAberto] = useState(false);
-
-    useEffect(() => {
-        function ajustarMenu() {
-            if (window.innerWidth >= 768) {
-                setMenuAberto(true);
-            } else {
-                setMenuAberto(false);
-            }
+    const [menuAberto, setMenuAberto] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.innerWidth >= 768;
         }
-
-        ajustarMenu(); // executa ao entrar
-
-        window.addEventListener("resize", ajustarMenu);
-
-        return () => window.removeEventListener("resize", ajustarMenu);
-    }, []);
+        return false;
+    });
 
 
     function fecharSeMobile() {
@@ -56,7 +45,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
             {/* ✅ MENU LATERAL */}
             <div
-  className={`
+                className={`
     fixed md:block
     top-0 left-0
     h-full
@@ -69,7 +58,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     md:translate-x-0
     z-40
   `}
->
+            >
 
 
                 <h2>Gestor de Assentos</h2>
