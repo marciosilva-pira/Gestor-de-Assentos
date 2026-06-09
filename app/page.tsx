@@ -1,5 +1,7 @@
 "use client";
 
+console.log("PAGE CARREGOU"); // ✅ COLOQUE AQUI
+
 import { useState, useEffect } from "react";
 
 import Login from "./components/Login";
