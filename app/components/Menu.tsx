@@ -21,6 +21,8 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
         }
     }
 
+console.log("Menu renderizado");
+    
     return (
         <div className="min-h-screen bg-slate-900 flex">
 
