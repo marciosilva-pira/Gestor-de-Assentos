@@ -147,13 +147,27 @@ export default function UsuariosGrid() {
                             <td style={td}>{u.email}</td>
 
                             <td style={td}>
-                                <button onClick={() => editarUsuario(u)} style={btnEditar}>
-                                    ✏️
-                                </button>
+                                <div style={{ display: "flex", gap: 8 }}>
 
-                                <button onClick={() => excluirUsuario(u.id)} style={btnExcluir}>
-                                    ❌
-                                </button>
+                                    <button
+                                        onClick={() => editarUsuario(u)}
+                                        style={btnEditar}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = "#2563eb"}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = "#3b82f6"}
+                                    >
+                                        ✏️
+                                    </button>
+
+                                    <button
+                                        onClick={() => excluirUsuario(u.id)}
+                                        style={btnExcluir}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = "#dc2626"}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = "#ef4444"}
+                                    >
+                                        🗑️
+                                    </button>
+
+                                </div>
                             </td>
                         </tr>
                     ))}
@@ -235,23 +249,28 @@ const btnNovo = {
 };
 
 const btnEditar = {
-    marginRight: 5,
     background: "#3b82f6",
     border: "none",
     color: "white",
-    padding: 5,
-    borderRadius: 4,
-    cursor: "pointer"
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: 14
 };
 
 const btnExcluir = {
     background: "#ef4444",
     border: "none",
     color: "white",
-    padding: 5,
-    borderRadius: 4,
-    cursor: "pointer"
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: 14
 };
+
+
 
 const btnSalvar = {
     width: "100%",
