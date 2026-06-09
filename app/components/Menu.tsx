@@ -45,8 +45,8 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
             {/* ✅ MENU LATERAL */}
             <div
-                className={`
-    fixed md:block
+  className={`
+    fixed
     top-0 left-0
     h-full
     w-64
@@ -58,7 +58,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     md:translate-x-0
     z-40
   `}
-            >
+>
 
 
                 <h2>Gestor de Assentos</h2>
