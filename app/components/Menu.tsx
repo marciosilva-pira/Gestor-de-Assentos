@@ -7,12 +7,20 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
     const [aba, setAba] = useState("");
 
-    const [menuAberto, setMenuAberto] = useState(() => {
-        if (typeof window !== "undefined") {
-            return window.innerWidth >= 768;
+    const [menuAberto, setMenuAberto] = useState(false);
+    const [carregado, setCarregado] = useState(false);
+
+    useEffect(() => {
+        setCarregado(true);
+
+        if (window.innerWidth >= 768) {
+            setMenuAberto(true);
         }
-        return false;
-    });
+    }, []);
+
+    if (!carregado) {
+        return null;
+    }
 
 
     return (
