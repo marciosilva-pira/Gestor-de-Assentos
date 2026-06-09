@@ -100,79 +100,77 @@ export default function UsuariosGrid() {
     }
 
     return (
-        <div>
-            <h2>Usuários</h2>
+        <div className="w-full p-4">
 
-            <button onClick={novoUsuario} style={btnNovo}>
+            <h2 className="text-xl text-white mb-3">
+                Usuários
+            </h2>
+
+
+            <button
+                onClick={novoUsuario}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            >
+
                 ➕ Novo Usuário
             </button>
 
-            <table style={{
-                width: "100%",
-                marginTop: 20,
-                borderCollapse: "collapse"
-            }}>
+            <div className="w-full overflow-x-auto mt-4">
+                <table className="min-w-[600px] w-full text-white">
+                    <thead className="bg-slate-800 text-white">
 
-                <thead style={{ background: "#1e293b", color: "#fff" }}>
-                    <tr>
-                        <th style={th}>Nome</th>
-                        <th style={th}>Email</th>
-                        <th style={th}>Ações</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {usuarios.map((u) => (
-
-                        <tr
-                            key={u.id}
-                            onClick={() => setSelecionado(u.id)}
-                            onMouseEnter={(e) => {
-                                if (selecionado !== u.id)
-                                    e.currentTarget.style.background = "#1e293b";
-                            }}
-                            onMouseLeave={(e) => {
-                                if (selecionado !== u.id)
-                                    e.currentTarget.style.background = "transparent";
-                            }}
-                            style={{
-                                background: selecionado === u.id ? "#334155" : "transparent",
-                                cursor: "pointer"
-                            }}
-                        >
-
-
-
-                            <td style={td}>{u.nome}</td>
-                            <td style={td}>{u.email}</td>
-
-                            <td style={td}>
-                                <div style={{ display: "flex", gap: 8 }}>
-
-                                    <button
-                                        onClick={() => editarUsuario(u)}
-                                        style={btnEditar}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = "#2563eb"}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = "#3b82f6"}
-                                    >
-                                        ✏️
-                                    </button>
-
-                                    <button
-                                        onClick={() => excluirUsuario(u.id)}
-                                        style={btnExcluir}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = "#dc2626"}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = "#ef4444"}
-                                    >
-                                        🗑️
-                                    </button>
-
-                                </div>
-                            </td>
+                        <tr>
+                            <th className="text-left p-3 border-b border-slate-700">Nome</th>
+                            <th className="text-left p-3 border-b border-slate-700">Email</th>
+                            <th className="text-left p-3 border-b border-slate-700">Ações</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        {usuarios.map((u) => (
+
+
+                            <tr
+                                key={u.id}
+                                onClick={() => setSelecionado(u.id)}
+                                className={`cursor-pointer ${selecionado === u.id
+                                    ? "bg-slate-700"
+                                    : "hover:bg-slate-800"
+                                    }`}
+                            >
+
+
+
+
+                                <td className="p-3 border-b border-slate-800">{u.nome}</td>
+                                <td className="p-3 border-b border-slate-800">{u.email}</td>
+
+                                <td className="p-3 border-b border-slate-800">
+                                    <div className="flex gap-2">
+
+                                        <button
+                                            onClick={() => editarUsuario(u)}
+                                            className="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded"
+                                        >
+                                            ✏️
+                                        </button>
+
+                                        <button
+                                            onClick={() => excluirUsuario(u.id)}
+                                            className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded"
+                                        >
+                                            🗑️
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+
 
             {/* ✅ FORMULÁRIO */}
             {modo && (
