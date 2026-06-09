@@ -22,7 +22,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     }
 
 console.log("Menu renderizado");
-    
+
     return (
         <div className="min-h-screen bg-slate-900 flex">
 
@@ -56,8 +56,7 @@ console.log("Menu renderizado");
     p-5 pt-16 md:pt-5
     flex flex-col gap-3
     transform transition-transform duration-300
-    ${menuAberto ? "translate-x-0" : "-translate-x-full"}
-    md:translate-x-0
+    ${menuAberto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
     z-40
   `}
 >

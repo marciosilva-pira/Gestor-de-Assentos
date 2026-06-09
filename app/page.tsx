@@ -69,6 +69,16 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
+
+ useEffect(() => {
+    if (usuario) {
+      setTela("menu");
+    } else {
+      setTela("login");
+    }
+  }, [usuario]);
+
+
   // cadastro
   const [novoNome, setNovoNome] = useState("");
   const [novoEmail, setNovoEmail] = useState("");
@@ -489,6 +499,7 @@ export default function Home() {
 console.log("TELA ATUAL:", tela);
 console.log("USUARIO:", usuario);
 
+if (!tela) return null;
 
   if (tela === "login") {
     return (
