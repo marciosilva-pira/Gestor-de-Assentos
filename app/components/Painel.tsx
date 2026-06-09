@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { listarFotos, excluirFoto } from "../services/fotos";
-import { carregarMapa, salvarMapa } from "../services/mapa";
-
+// ✅ IMPORTS QUE FALTAVAM
 import Grid from "./Grid";
 import Miniaturas from "./Miniaturas";
 
+import { listarFotos, excluirFoto } from "../services/fotos";
+import { carregarMapa, salvarMapa } from "../services/mapa";
 
 export default function Painel({ usuario, setTela }: any) {
   const [fotos, setFotos] = useState<any[]>([]);
