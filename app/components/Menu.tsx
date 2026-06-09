@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UsuariosGrid from "./UsuariosGrid";
 
 export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any) {
 
     const [aba, setAba] = useState("");
     const [menuAberto, setMenuAberto] = useState(false);
+
+    useEffect(() => {
+        if (window.innerWidth >= 768) {
+            setMenuAberto(true);
+        }
+    }, []);
 
 
     return (
