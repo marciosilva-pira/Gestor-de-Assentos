@@ -56,7 +56,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
             {/* ✅ MENU LATERAL */}
             <div
                 className={`
-    fixed md:static
+    fixed md:relative
     top-0 left-0
     h-full md:h-auto
     w-64
@@ -66,7 +66,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     transform transition-transform duration-300
     ${menuAberto ? "translate-x-0" : "-translate-x-full"}
     md:translate-x-0 md:transform-none
-    z-40
+    z-40 md:z-auto
   `}
             >
 
@@ -114,7 +114,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
             </div>
 
             {/* ✅ CONTEÚDO PRINCIPAL */}
-            <div className="flex-1 bg-slate-900 p-6 md:p-8 text-white w-full">
+            <div className="flex-1 bg-slate-900 p-6 md:p-8 text-white w-full md:ml-64">
 
                 {aba === "usuarios" && (
                     <UsuariosGrid />
