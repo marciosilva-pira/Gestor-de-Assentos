@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 
+import Login from "./components/Login";
+import Menu from "./components/Menu";
+import Cadastro from "./components/Cadastro";
+
 
 // ✅ ESTADOS DE LOGIN
 const inputStyle = {
@@ -474,210 +478,43 @@ export default function Home() {
   }
 
   if (tela === "login") {
-    return (
-      <div style={{
-        background: "#0f172a",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
-        <div style={{
-          background: "#1e293b",
-          padding: 40,
-          borderRadius: 12,
-          width: 320
-        }}>
-          <h2 style={{ color: "white", marginBottom: 20 }}>
-            Sistema de Assentos
-          </h2>
-
-          <input
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 10,
-              borderRadius: 6,
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "#fff"
-            }}
-          />
-
-          <input
-            type="password"
-            placeholder="Senha"
-            onChange={(e) => setSenha(e.target.value)}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 15,
-              borderRadius: 6,
-              border: "1px solid #334155",
-              background: "#0f172a",
-              color: "#fff"
-            }}
-          />
-
-          <button
-            onClick={fazerLogin}
-            style={{
-              width: "100%",
-              padding: 10,
-              background: "#3b82f6",
-              border: "none",
-              borderRadius: 6,
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            Entrar
-          </button>
-
-
-        </div>
-      </div>
-    );
-  }
+  return (
+    <Login
+      onLogin={(user: any) => {
+        setUsuario(user);
+        setTela("menu");
+      }}
+    />
+  );
+}
 
   if (tela === "menu") {
-    return (
-      <div style={{
-        background: "#0f172a",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
-        <div style={{
-          background: "#1e293b",
-          padding: 40,
-          borderRadius: 12,
-          width: 320,
-          textAlign: "center"
-        }}>
+  return (
+    <Menu
+      usuario={usuario}
+      onIrPainel={async () => {
+        await carregarMapaFirebase();
+        setTela("painel");
+      }}
+      onIrCadastro={() => setTela("cadastro")}
+      onSair={() => {
+        setUsuario(null);
+        setTela("login");
+      }}
+    />
+  );
+}
 
-          {/* USUÁRIO */}
-          <div style={{
-            marginBottom: 20,
-            fontWeight: "bold",
-            borderBottom: "1px solid #334155",
-            paddingBottom: 10,
-            color: "white"
-          }}>
-            👤 {usuario?.nome}
-          </div>
-
-          {/* BOTÕES */}
-          <button
-            onClick={async () => {
-              await carregarMapaFirebase(); // ✅ correto aqui
-              setTela("painel");
-            }}
-            style={{
-              width: "100%",
-              padding: 12,
-              marginTop: 10,
-              background: "#22c55e",
-              border: "none",
-              borderRadius: 6,
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            📋 Painel de Assentos
-          </button>
-
-          {usuario?.admin && (
-            <button
-              onClick={() => setTela("cadastro")}
-              style={{
-                width: "100%",
-                padding: 10,
-                marginTop: 10,
-                background: "#3b82f6",
-                border: "none",
-                borderRadius: 6,
-                color: "white",
-                cursor: "pointer"
-              }}
-            >
-              👤 Cadastro de Usuário
-            </button>
-          )}
-
-
-          <button
-            onClick={() => {
-              setUsuario(null);
-              setTela("login");
-            }}
-            style={{
-              width: "100%",
-              padding: 10,
-              marginTop: 10,
-              background: "#ef4444",
-              border: "none",
-              borderRadius: 6,
-              color: "white",
-              cursor: "pointer"
-            }}
-          >
-            🚪 Sair
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (tela === "cadastro") {
+  return (
+    <Cadastro
+      usuario={usuario}
+      onVoltar={() => setTela("menu")}
+    />
+  );
+}
 
-    // ✅ BLOQUEIO DE ACESSO
-    if (!usuario?.admin) {
-      alert("❌ Apenas administradores podem acessar");
-      setTela("menu");
-      return null;
-    }
-
-    return (
-      <div style={{
-        background: "#0f172a",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
-        <div style={{
-          background: "#1e293b",
-          padding: 30,
-          borderRadius: 10,
-          width: 300
-        }}>
-          <h2 style={{ color: "white" }}>Cadastro</h2>
-
-          <input placeholder="Nome" onChange={(e) => setNovoNome(e.target.value)} style={inputStyle} />
-          <input placeholder="Email" onChange={(e) => setNovoEmail(e.target.value)} style={inputStyle} />
-          <input placeholder="Senha" type="password" onChange={(e) => setNovaSenha(e.target.value)} style={inputStyle} />
-
-          <label style={{ color: "white" }}>
-            <input type="checkbox" onChange={(e) => setNovoAdmin(e.target.checked)} /> Admin
-          </label>
-
-          <button onClick={cadastrarUsuario} style={btnPrimary}>
-            Salvar
-          </button>
-
-          <button onClick={() => setTela("menu")} style={btnSecondary}>
-            Voltar
-          </button>
-        </div>
-      </div>
-    );
-  }
 
 
 
