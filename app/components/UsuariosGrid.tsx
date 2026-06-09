@@ -71,10 +71,11 @@ export default function UsuariosGrid() {
     // ✅ SALVAR (novo ou edição)
     async function salvar() {
 
-        if (!nome || !email) {
-            alert("Preencha nome e email");
+        if (!nome || !email || !senha) {
+            alert("Preencha nome, email e senha");
             return;
         }
+
 
         if (modo === "novo") {
             await addDoc(collection(db, "usuarios"), {
