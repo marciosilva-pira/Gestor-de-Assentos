@@ -8,21 +8,24 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     const [aba, setAba] = useState("");
 
     const [menuAberto, setMenuAberto] = useState(false);
-    const [carregado, setCarregado] = useState(false);
 
     useEffect(() => {
-        setCarregado(true);
-
-        if (window.innerWidth >= 768) {
-            setMenuAberto(true);
+        function ajustarMenu() {
+            if (window.innerWidth >= 768) {
+                setMenuAberto(true);
+            } else {
+                setMenuAberto(false);
+            }
         }
+
+        ajustarMenu(); // executa ao entrar
+
+        window.addEventListener("resize", ajustarMenu);
+
+        return () => window.removeEventListener("resize", ajustarMenu);
     }, []);
 
-    if (!carregado) {
-        return null;
-    }
-
-
+    
     return (
         <div className="flex min-h-screen">
 
