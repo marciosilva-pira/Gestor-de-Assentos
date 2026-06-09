@@ -25,7 +25,13 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
         return () => window.removeEventListener("resize", ajustarMenu);
     }, []);
 
-    
+
+    function fecharSeMobile() {
+        if (window.innerWidth < 768) {
+            setMenuAberto(false);
+        }
+    }
+
     return (
         <div className="flex min-h-screen">
 
@@ -36,6 +42,15 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
             >
                 ☰
             </button>
+
+
+            {/* ✅ OVERLAY (COLOCA AQUI) */}
+            {menuAberto && (
+                <div
+                    onClick={() => setMenuAberto(false)}
+                    className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                />
+            )}
 
 
             {/* ✅ MENU LATERAL */}
@@ -50,7 +65,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
     flex flex-col gap-3
     transform transition-transform duration-300
     ${menuAberto ? "translate-x-0" : "-translate-x-full"}
-    md:translate-x-0
+    md:translate-x-0 md:transform-none
     z-40
   `}
             >
@@ -64,8 +79,9 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
                 <button
                     onClick={() => {
                         onIrPainel();
-                        setMenuAberto(false);
+                        fecharSeMobile();
                     }}
+
                     className="bg-slate-700 hover:bg-slate-600 p-2 rounded text-left"
                 >
                     📋 Painel
@@ -77,7 +93,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
                     <button
                         onClick={() => {
                             setAba("usuarios");
-                            setMenuAberto(false);
+                            fecharSeMobile();
                         }}
                         className="bg-slate-700 hover:bg-slate-600 p-2 rounded text-left"
                     >
@@ -89,7 +105,7 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
                 <button
                     onClick={() => {
                         onSair();
-                        setMenuAberto(false);
+                        fecharSeMobile();
                     }}
                     className="mt-auto bg-red-500 hover:bg-red-600 p-2 rounded text-left"
                 >
