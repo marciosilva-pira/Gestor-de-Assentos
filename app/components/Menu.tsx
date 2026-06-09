@@ -6,13 +6,13 @@ import UsuariosGrid from "./UsuariosGrid";
 export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any) {
 
     const [aba, setAba] = useState("");
-    const [menuAberto, setMenuAberto] = useState(false);
 
-    useEffect(() => {
-        if (window.innerWidth >= 768) {
-            setMenuAberto(true);
+    const [menuAberto, setMenuAberto] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.innerWidth >= 768;
         }
-    }, []);
+        return false;
+    });
 
 
     return (
