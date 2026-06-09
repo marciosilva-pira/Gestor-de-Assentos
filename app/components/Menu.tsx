@@ -6,59 +6,82 @@ import UsuariosGrid from "./UsuariosGrid";
 export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any) {
 
     const [aba, setAba] = useState("");
+    const [menuAberto, setMenuAberto] = useState(false);
 
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh" }}>
+        <div className="flex min-h-screen">
+
+            {/* BOTÃO MOBILE */}
+            <button
+                onClick={() => setMenuAberto(!menuAberto)}
+                className="md:hidden fixed top-4 left-4 z-50 bg-slate-800 text-white p-2 rounded"
+            >
+                ☰
+            </button>
+
 
             {/* ✅ MENU LATERAL */}
-            <div style={{
-                width: 250,
-                background: "#1e293b",
-                color: "white",
-                padding: 20,
-                display: "flex",
-                flexDirection: "column",
-                gap: 10
-            }}>
+            <div
+                className={`
+    fixed md:static
+    top-0 left-0
+    h-full md:h-auto
+    w-64
+    bg-slate-800 text-white
+    p-5
+    flex flex-col gap-3
+    transform transition-transform duration-300
+    ${menuAberto ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+    z-40
+  `}
+            >
+
                 <h2>Gestor de Assentos</h2>
-                <div style={{
-                    marginBottom: 20,
-                    paddingBottom: 10,
-                    borderBottom: "1px solid #334155",
-                    color: "white"
-                }}>
+                <div className="mb-4 pb-2 border-b border-slate-600">
                     👤 {usuario?.nome}
                 </div>
 
 
-                <button onClick={onIrPainel} style={btnMenu}>
+                <button
+                    onClick={() => {
+                        onIrPainel();
+                        setMenuAberto(false);
+                    }}
+                    className="bg-slate-700 hover:bg-slate-600 p-2 rounded text-left"
+                >
                     📋 Painel
                 </button>
 
-                {usuario?.admin && (
+
+                {usuario?.admin === true && (
+
                     <button
-                        onClick={() => setAba("usuarios")}
-                        style={btnMenu}
+                        onClick={() => {
+                            setAba("usuarios");
+                            setMenuAberto(false);
+                        }}
+                        className="bg-slate-700 hover:bg-slate-600 p-2 rounded text-left"
                     >
                         👤 Usuários
                     </button>
+
                 )}
 
-                <button onClick={onSair} style={btnMenuSair}>
+                <button
+                    onClick={() => {
+                        onSair();
+                        setMenuAberto(false);
+                    }}
+                    className="mt-auto bg-red-500 hover:bg-red-600 p-2 rounded text-left"
+                >
                     🚪 Sair
                 </button>
             </div>
 
             {/* ✅ CONTEÚDO PRINCIPAL */}
-            <div
-                style={{
-                    flex: 1,
-                    background: "#0f172a",
-                    padding: 30,
-                    color: "white"
-                }}
-            >
+            <div className="flex-1 bg-slate-900 p-6 md:p-8 text-white w-full">
 
                 {aba === "usuarios" && (
                     <UsuariosGrid />
