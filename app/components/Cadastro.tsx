@@ -51,32 +51,23 @@ export default function Cadastro({ usuario, onVoltar }: any) {
   }
 
   return (
-    <div style={{
-      background: "#0f172a",
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}>
-      <div style={{
-        background: "#1e293b",
-        padding: 30,
-        borderRadius: 10,
-        width: 300
-      }}>
+    <div className="w-full min-h-screen flex items-center justify-center bg-slate-900 p-4">
+      <div className="w-full max-w-md bg-slate-800 p-6 rounded-lg">
 
-        <h2 style={{ color: "white" }}>Cadastro</h2>
+        <h2 className="text-white text-xl md:text-2xl mb-4">
+          Cadastro
+        </h2>
 
         <input
           placeholder="Nome"
           onChange={(e) => setNovoNome(e.target.value)}
-          style={input}
+          className="w-full p-2 mb-3 rounded border border-slate-600 bg-slate-900 text-white"
         />
 
         <input
           placeholder="Email"
           onChange={(e) => setNovoEmail(e.target.value)}
-          style={input}
+          className="w-full p-2 mb-3 rounded border border-slate-600 bg-slate-900 text-white"
         />
 
         <input
@@ -84,20 +75,28 @@ export default function Cadastro({ usuario, onVoltar }: any) {
           placeholder="Senha"
           onChange={(e) => setNovaSenha(e.target.value)}
           style={input}
+          className="w-full p-2 mb-3 rounded border border-slate-600 bg-slate-900 text-white"
         />
 
-        <label style={{ color: "white" }}>
+
+        <label className="text-white flex items-center gap-2 mb-2">
           <input
             type="checkbox"
             onChange={(e) => setNovoAdmin(e.target.checked)}
           /> Admin
         </label>
 
-        <button onClick={cadastrarUsuario} style={btnPrimary}>
+        <button
+          onClick={cadastrarUsuario}
+          className="w-full p-2 bg-blue-500 rounded text-white mt-2 hover:bg-blue-600"
+        >
           Salvar
         </button>
 
-        <button onClick={onVoltar} style={btnSecondary}>
+        <button
+          onClick={onVoltar}
+          className="w-full p-2 bg-slate-600 rounded text-white mt-2 hover:bg-slate-700"
+        >
           Voltar
         </button>
 
