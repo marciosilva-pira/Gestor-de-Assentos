@@ -13,6 +13,8 @@ import {
 
 export default function UsuariosGrid() {
 
+    const [selecionado, setSelecionado] = useState<string | null>(null);
+
     const [usuarios, setUsuarios] = useState<any[]>([]);
 
     const [modo, setModo] = useState<"novo" | "editar" | null>(null);
@@ -109,8 +111,8 @@ export default function UsuariosGrid() {
                 marginTop: 20,
                 borderCollapse: "collapse"
             }}>
-                
-                    <thead style={{ background: "#1e293b", color: "#fff" }}>
+
+                <thead style={{ background: "#1e293b", color: "#fff" }}>
                     <tr>
                         <th style={th}>Nome</th>
                         <th style={th}>Email</th>
@@ -120,11 +122,25 @@ export default function UsuariosGrid() {
 
                 <tbody>
                     {usuarios.map((u) => (
+
                         <tr
                             key={u.id}
-                            onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
-                            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                            onClick={() => setSelecionado(u.id)}
+                            onMouseEnter={(e) => {
+                                if (selecionado !== u.id)
+                                    e.currentTarget.style.background = "#1e293b";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selecionado !== u.id)
+                                    e.currentTarget.style.background = "transparent";
+                            }}
+                            style={{
+                                background: selecionado === u.id ? "#334155" : "transparent",
+                                cursor: "pointer"
+                            }}
                         >
+
+
 
                             <td style={td}>{u.nome}</td>
                             <td style={td}>{u.email}</td>
