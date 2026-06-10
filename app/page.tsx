@@ -8,6 +8,8 @@ import Login from "./components/Login";
 import Menu from "./components/Menu";
 import Cadastro from "./components/Cadastro";
 
+const [dragFoto, setDragFoto] = useState<string | null>(null)
+const [posicao, setPosicao] = useState({ x: 0, y: 0 })
 
 // ✅ ESTADOS DE LOGIN
 const inputStyle = {
@@ -78,6 +80,7 @@ export default function Home() {
     }
   }, [usuario]);
 
+  
 
   // cadastro
   const [novoNome, setNovoNome] = useState("");
@@ -540,6 +543,30 @@ if (!tela) return null;
   }
 
 
+
+const [dragFoto, setDragFoto] = useState<string | null>(null)
+  const [posicao, setPosicao] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const move = (e: PointerEvent) => {
+      setPosicao({
+        x: e.clientX,
+        y: e.clientY
+      })
+    }
+
+    const up = () => {
+      setDragFoto(null)
+    }
+
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+
+    return () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+  }, [])
 
 
 
