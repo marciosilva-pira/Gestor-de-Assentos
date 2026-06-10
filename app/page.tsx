@@ -91,13 +91,13 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
 
-  
-const [dragFoto, setDragFoto] = useState<string | null>(null)
-const [posicao, setPosicao] = useState({ x: 0, y: 0 })
+
+  const [dragFoto, setDragFoto] = useState<string | null>(null)
+  const [posicao, setPosicao] = useState({ x: 0, y: 0 })
 
 
   // ✅ NOVO: controle de drag
-  const [dragOrigem, setDragOrigem] = useState<number | null>(null);
+  //const [dragOrigem, setDragOrigem] = useState<number | null>(null);
 
   const [carregando, setCarregando] = useState(false);
   const [progresso, setProgresso] = useState(0);
@@ -170,7 +170,7 @@ const [posicao, setPosicao] = useState({ x: 0, y: 0 })
     carregarFotosBanco();
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     const move = (e: PointerEvent) => {
       setPosicao({
         x: e.clientX,
@@ -189,7 +189,7 @@ useEffect(() => {
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerup", up)
     }
-  }, [])  
+  }, [])
 
   async function fazerLogin() {
     const snapshot = await getDocs(collection(db, "usuarios"));
@@ -370,29 +370,7 @@ useEffect(() => {
   }
 
 
-  // ✅ NOVO: drop
-  function onDropCadeira(destino: number) {
-    if (dragOrigem === null) return;
 
-    const novo = { ...mapa };
-
-    const origemFoto = novo[dragOrigem];
-    const destinoFoto = novo[destino];
-
-    if (!origemFoto) return;
-
-    // troca ou move
-    if (destinoFoto) {
-      novo[dragOrigem] = destinoFoto;
-    } else {
-      delete novo[dragOrigem];
-    }
-
-    novo[destino] = origemFoto;
-
-    setMapa(novo);
-    setDragOrigem(null);
-  }
 
   const cadeiras = [];
 
@@ -447,8 +425,6 @@ useEffect(() => {
           </span>
 
           <div
-          
-  onClick={() => clicarCadeira(cadeiraNum)}
 
             onPointerUp={() => {
               if (dragFoto) {
@@ -459,30 +435,32 @@ useEffect(() => {
               }
             }}
 
-            onPointerEnter={() => {
-              if (dragFoto) {
-                const novo = { ...mapa }
-                novo[cadeiraNum] = dragFoto
-                setMapa(novo)
-              }
-            }}
-
             onContextMenu={(e) => {
               e.preventDefault();
               removerFotoCadeira(cadeiraNum);
             }}
 
+            style={{
+              width: "100%",
+              maxWidth: isMobile ? 50 : 70,
+              aspectRatio: "1",
+              background: "#2B2B2B",
+              border: "1px solid #555",
+              position: "relative",
+              cursor: "pointer",
+              borderRadius: 6,
+              overflow: "hidden",
+            }}
           >
+
             {foto && (
               <img
                 src={foto}
-                draggable
-                onDragStart={() => setDragOrigem(cadeiraNum)}
                 style={{
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  display: "visible",
+                  pointerEvents: "none" // ✅ ESSENCIAL
                 }}
               />
             )}
@@ -573,7 +551,7 @@ useEffect(() => {
   }
 
 
-  
+
 
 
 
@@ -847,10 +825,10 @@ useEffect(() => {
           src={dragFoto}
           style={{
             position: "fixed",
-            left: posicao.x - 30,
-            top: posicao.y - 30,
-            width: 60,
-            height: 60,
+            width: isMobile ? 50 : 60,
+            height: isMobile ? 50 : 60,
+            left: posicao.x - (isMobile ? 25 : 30),
+            top: posicao.y - (isMobile ? 25 : 30),
             objectFit: "cover",
             pointerEvents: "none",
             zIndex: 9999
