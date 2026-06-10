@@ -47,17 +47,16 @@ console.log("Menu renderizado");
 
             {/* ✅ MENU LATERAL */}
             <div
-            style={{ border: "5px solid yellow" }}
-  className={`
+  className="
     fixed
     top-0 left-0
     h-full
     w-64
-    bg-red-500 text-white
+    bg-slate-800 text-white
     p-5 pt-16 md:pt-5
     flex flex-col gap-3
     z-[9999]
-  `}
+  "
 >
 
 
