@@ -52,7 +52,7 @@ console.log("Menu renderizado");
     top-0 left-0
     h-full
     w-64
-    bg-slate-800 text-white
+    bg-red-500 text-white
     p-5 pt-16 md:pt-5
     flex flex-col gap-3
     transform transition-transform duration-300
@@ -106,7 +106,7 @@ console.log("Menu renderizado");
             </div>
 
             {/* ✅ CONTEÚDO PRINCIPAL */}
-            <div className="flex-1 md:ml-64 bg-slate-900 p-6 md:p-8 text-white w-full">
+            <div className="flex-1 md:ml-0 bg-slate-900 p-6 md:p-8 text-white w-full">
 
 
                 {aba === "usuarios" && (
