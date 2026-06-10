@@ -422,24 +422,31 @@ export default function Home() {
           </span>
 
           <div
-            onClick={() => clicarCadeira(cadeiraNum)}
+          
+  onClick={() => clicarCadeira(cadeiraNum)}
+
+            onPointerUp={() => {
+              if (dragFoto) {
+                const novo = { ...mapa }
+                novo[cadeiraNum] = dragFoto
+                setMapa(novo)
+                setDragFoto(null)
+              }
+            }}
+
+            onPointerEnter={() => {
+              if (dragFoto) {
+                const novo = { ...mapa }
+                novo[cadeiraNum] = dragFoto
+                setMapa(novo)
+              }
+            }}
+
             onContextMenu={(e) => {
               e.preventDefault();
               removerFotoCadeira(cadeiraNum);
             }}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => onDropCadeira(cadeiraNum)}
-            style={{
-              width: "100%",
-              maxWidth: isMobile ? 50 : 70,
-              aspectRatio: "1",
-              background: "#2B2B2B",
-              border: "1px solid #555",
-              position: "relative",
-              cursor: "pointer",
-              borderRadius: 6,
-              overflow: "hidden",
-            }}
+
           >
             {foto && (
               <img
