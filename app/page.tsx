@@ -91,6 +91,11 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
 
+  
+const [dragFoto, setDragFoto] = useState<string | null>(null)
+const [posicao, setPosicao] = useState({ x: 0, y: 0 })
+
+
   // ✅ NOVO: controle de drag
   const [dragOrigem, setDragOrigem] = useState<number | null>(null);
 
@@ -165,6 +170,26 @@ export default function Home() {
     carregarFotosBanco();
   }, []);
 
+useEffect(() => {
+    const move = (e: PointerEvent) => {
+      setPosicao({
+        x: e.clientX,
+        y: e.clientY
+      })
+    }
+
+    const up = () => {
+      setDragFoto(null)
+    }
+
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+
+    return () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+  }, [])  
 
   async function fazerLogin() {
     const snapshot = await getDocs(collection(db, "usuarios"));
@@ -548,30 +573,7 @@ export default function Home() {
   }
 
 
-
-  const [dragFoto, setDragFoto] = useState<string | null>(null)
-  const [posicao, setPosicao] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    const move = (e: PointerEvent) => {
-      setPosicao({
-        x: e.clientX,
-        y: e.clientY
-      })
-    }
-
-    const up = () => {
-      setDragFoto(null)
-    }
-
-    window.addEventListener("pointermove", move)
-    window.addEventListener("pointerup", up)
-
-    return () => {
-      window.removeEventListener("pointermove", move)
-      window.removeEventListener("pointerup", up)
-    }
-  }, [])
+  
 
 
 
