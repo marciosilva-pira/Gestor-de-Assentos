@@ -26,10 +26,20 @@ export default function Grid({ mapa, setMapa, selecionada }: any) {
       <div
         key={i}
         onClick={() => clicarCadeira(i)}
+
+        onPointerUp={() => clicarCadeira(i)}
+
+        onPointerEnter={() => {
+          if (selecionada) {
+            clicarCadeira(i)
+          }
+        }}
+
         onContextMenu={(e) => {
           e.preventDefault();
           remover(i);
         }}
+
         style={{
           width: 70,
           height: 70,
@@ -42,6 +52,7 @@ export default function Grid({ mapa, setMapa, selecionada }: any) {
           borderRadius: 6
         }}
       >
+
         {foto ? (
           <img
             src={foto}
