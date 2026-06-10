@@ -7,13 +7,22 @@ export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any)
 
     const [aba, setAba] = useState("");
 
-    const [menuAberto, setMenuAberto] = useState(() => {
-        if (typeof window !== "undefined") {
-            return window.innerWidth >= 768;
-        }
-        return false;
-    });
+    const [menuAberto, setMenuAberto] = useState(false);
 
+useEffect(() => {
+    function ajustarMenu() {
+        if (window.innerWidth >= 768) {
+            setMenuAberto(true);
+        } else {
+            setMenuAberto(false);
+        }
+    }
+
+    ajustarMenu();
+    window.addEventListener("resize", ajustarMenu);
+
+    return () => window.removeEventListener("resize", ajustarMenu);
+}, []);
 
     function fecharSeMobile() {
         if (window.innerWidth < 768) {
