@@ -30,7 +30,8 @@ console.log("Menu renderizado");
             {/* BOTÃO MOBILE */}
             <button
                 onClick={() => setMenuAberto(!menuAberto)}
-                className="md:hidden fixed top-4 left-4 z-50 bg-slate-800 text-white p-2 rounded"
+                className="md:hidden fixed top-4 left-4 z-[10000] bg-slate-800 text-white p-2 rounded"
+
             >
                 ☰
             </button>
@@ -47,7 +48,7 @@ console.log("Menu renderizado");
 
             {/* ✅ MENU LATERAL */}
             <div
-  className="
+  className={`
     fixed
     top-0 left-0
     h-full
@@ -55,9 +56,16 @@ console.log("Menu renderizado");
     bg-slate-800 text-white
     p-5 pt-16 md:pt-5
     flex flex-col gap-3
+
+    transform transition-transform duration-300
+    ${menuAberto ? "translate-x-0" : "-translate-x-full"}
+
+    md:translate-x-0
+
     z-[9999]
-  "
+  `}
 >
+
 
 
                 <h2>Gestor de Assentos</h2>
@@ -104,7 +112,7 @@ console.log("Menu renderizado");
             </div>
 
             {/* ✅ CONTEÚDO PRINCIPAL */}
-            <div className="flex-1 bg-slate-900 p-6 md:p-8 text-white w-full">
+            <div className="flex-1 bg-slate-900 p-6 md:p-8 text-white w-full md:ml-64">
 
 
                 {aba === "usuarios" && (
