@@ -8,8 +8,6 @@ import Login from "./components/Login";
 import Menu from "./components/Menu";
 import Cadastro from "./components/Cadastro";
 
-const [dragFoto, setDragFoto] = useState<string | null>(null)
-const [posicao, setPosicao] = useState({ x: 0, y: 0 })
 
 // ✅ ESTADOS DE LOGIN
 const inputStyle = {
@@ -72,7 +70,7 @@ export default function Home() {
   const [senha, setSenha] = useState("");
 
 
- useEffect(() => {
+  useEffect(() => {
     if (usuario) {
       setTela("menu");
     } else {
@@ -80,7 +78,7 @@ export default function Home() {
     }
   }, [usuario]);
 
-  
+
 
   // cadastro
   const [novoNome, setNovoNome] = useState("");
@@ -499,10 +497,10 @@ export default function Home() {
   }
 
 
-console.log("TELA ATUAL:", tela);
-console.log("USUARIO:", usuario);
+  console.log("TELA ATUAL:", tela);
+  console.log("USUARIO:", usuario);
 
-if (!tela) return null;
+  if (!tela) return null;
 
   if (tela === "login") {
     return (
@@ -544,7 +542,7 @@ if (!tela) return null;
 
 
 
-const [dragFoto, setDragFoto] = useState<string | null>(null)
+  const [dragFoto, setDragFoto] = useState<string | null>(null)
   const [posicao, setPosicao] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -780,21 +778,33 @@ const [dragFoto, setDragFoto] = useState<string | null>(null)
       >
         {fotos.map((foto) => (
           <div key={foto.id} style={{ position: "relative" }}>
+
             <img
               src={foto.url}
-              onClick={() => setSelecionada(foto.url)}
+
+              onPointerDown={(e) => {
+                setSelecionada(foto.url)
+
+                setDragFoto(foto.url) // ✅ ativa drag
+
+                setPosicao({
+                  x: e.clientX,
+                  y: e.clientY
+                })
+              }}
+
+              onDragStart={(e) => e.preventDefault()}
+
               style={{
                 width: isMobile ? 50 : 60,
                 height: isMobile ? 50 : 60,
                 objectFit: "cover",
                 borderRadius: 6,
-                cursor: "pointer",
-                border:
-                  selecionada === foto.url
-                    ? "3px solid red"
-                    : "1px solid #444",
+                cursor: "grab",
+                touchAction: "none"
               }}
             />
+
 
             {usuario?.admin && (
               <button
@@ -820,6 +830,25 @@ const [dragFoto, setDragFoto] = useState<string | null>(null)
           </div>
         ))}
       </div>
+
+
+      {/* ✅ AQUI — imagem flutuante */}
+      {dragFoto && (
+        <img
+          src={dragFoto}
+          style={{
+            position: "fixed",
+            left: posicao.x - 30,
+            top: posicao.y - 30,
+            width: 60,
+            height: 60,
+            objectFit: "cover",
+            pointerEvents: "none",
+            zIndex: 9999
+          }}
+        />
+      )}
+
     </div>
   );
 }

@@ -4,6 +4,9 @@ export default function Miniaturas({
   setSelecionada,
   usuario,
   excluirFoto,
+  setDragFoto,      // ✅ NOVO
+  setPosicao
+
 }: any) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 20 }}>
@@ -16,18 +19,17 @@ export default function Miniaturas({
             onClick={() => setSelecionada(foto.url)}
 
             onPointerDown={(e) => {
-              console.log("Iniciou drag", foto.url)
-              // aqui você pode salvar a foto selecionada para arrastar
+              setSelecionada(foto.url)
+
+              setDragFoto(foto.url) // ✅ ativa drag global
+
+              setPosicao({
+                x: e.clientX,
+                y: e.clientY
+              })
             }}
 
-            onPointerMove={(e) => {
-              // aqui você pode mover visualmente se quiser
-            }}
 
-            onPointerUp={(e) => {
-              console.log("Soltou")
-              // aqui entra a lógica de soltar na cadeira
-            }}
 
             onDragStart={(e) => e.preventDefault()}
 
