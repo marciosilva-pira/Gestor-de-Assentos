@@ -427,10 +427,8 @@ export default function Home() {
             onPointerDown={() => {
 
               if (selecionada) return;
-
               if (!mapa[cadeiraNum]) return;
 
-              // ✅ SE JÁ ESTÁ SELECIONADO → CANCELA
               if (dragCadeira === cadeiraNum) {
                 setDragCadeira(null)
                 setIsDragging(false)
@@ -443,6 +441,20 @@ export default function Home() {
               }, 600);
 
               setDragTimeout(timeout);
+            }}
+
+            onPointerLeave={() => {
+              if (dragTimeout) {
+                clearTimeout(dragTimeout);
+                setDragTimeout(null);
+              }
+            }}
+
+            onPointerCancel={() => {
+              if (dragTimeout) {
+                clearTimeout(dragTimeout);
+                setDragTimeout(null);
+              }
             }}
 
 
