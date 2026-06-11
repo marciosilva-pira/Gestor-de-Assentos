@@ -63,6 +63,7 @@ const GRID_COLS = 25;
 export default function Home() {
   const [tela, setTela] = useState("login");
 
+  const [isDragging, setIsDragging] = useState(false);
   const [dragCadeira, setDragCadeira] = useState<number | null>(null);
 
   const [usuario, setUsuario] = useState<any>(null);
@@ -424,15 +425,16 @@ export default function Home() {
             onPointerDown={() => {
               if (mapa[cadeiraNum]) {
                 setDragCadeira(cadeiraNum)
+                setIsDragging(true) // ✅ começou arraste
               }
             }}
+
 
             // ✅ SOLTAR (drop)
             onPointerUp={() => {
               if (dragCadeira !== null && dragCadeira !== cadeiraNum) {
                 const novo = { ...mapa }
 
-                // só move se destino estiver vazio
                 if (!mapa[cadeiraNum]) {
                   novo[cadeiraNum] = mapa[dragCadeira]
                   delete novo[dragCadeira]
@@ -441,6 +443,8 @@ export default function Home() {
 
                 setDragCadeira(null)
               }
+
+              setIsDragging(false) // ✅ terminou arraste
             }}
 
             onContextMenu={(e) => {
@@ -465,7 +469,7 @@ export default function Home() {
               outline: "none",
               userSelect: "none",
               WebkitTapHighlightColor: "transparent",
-              touchAction: "none" 
+              touchAction: isDragging ? "none" : "auto"
             }}
 
           >
