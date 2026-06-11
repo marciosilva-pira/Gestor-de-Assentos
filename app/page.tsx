@@ -65,6 +65,8 @@ export default function Home() {
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragCadeira, setDragCadeira] = useState<number | null>(null);
+  const [dragTimeout, setDragTimeout] = useState<any>(null);
+
 
   const [usuario, setUsuario] = useState<any>(null);
 
@@ -423,15 +425,27 @@ export default function Home() {
 
             // ✅ INÍCIO do arrastar
             onPointerDown={() => {
-              if (mapa[cadeiraNum]) {
+              if (!mapa[cadeiraNum]) return;
+
+              const timeout = setTimeout(() => {
                 setDragCadeira(cadeiraNum)
-                setIsDragging(true) // ✅ começou arraste
-              }
+                setIsDragging(true)
+              }, 200); // ⏱️ tempo de segurar (200ms)
+
+              setDragTimeout(timeout);
             }}
+
 
 
             // ✅ SOLTAR (drop)
             onPointerUp={() => {
+              // ✅ cancela o timer (se só clicou rápido)
+              if (dragTimeout) {
+                clearTimeout(dragTimeout);
+                setDragTimeout(null);
+              }
+
+              // ✅ arrasto (se realmente ativou)
               if (dragCadeira !== null && dragCadeira !== cadeiraNum) {
                 const novo = { ...mapa }
 
@@ -444,7 +458,7 @@ export default function Home() {
                 setDragCadeira(null)
               }
 
-              setIsDragging(false) // ✅ terminou arraste
+              setIsDragging(false)
             }}
 
             onContextMenu={(e) => {
