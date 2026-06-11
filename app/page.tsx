@@ -425,6 +425,10 @@ export default function Home() {
 
             // ✅ INÍCIO do arrastar
             onPointerDown={() => {
+
+              // ✅ se estiver colocando foto, NÃO permite arrastar
+              if (selecionada) return;
+
               if (!mapa[cadeiraNum]) return;
 
               const timeout = setTimeout(() => {
@@ -437,12 +441,19 @@ export default function Home() {
 
 
 
-            // ✅ SOLTAR (drop)
             onPointerUp={() => {
+
               // ✅ cancela o timer (se só clicou rápido)
               if (dragTimeout) {
                 clearTimeout(dragTimeout);
                 setDragTimeout(null);
+              }
+
+              // ✅ BLOQUEIA o drag se estiver no modo colocar foto
+              if (selecionada) {
+                setDragCadeira(null);
+                setIsDragging(false);
+                return;
               }
 
               // ✅ arrasto (se realmente ativou)
