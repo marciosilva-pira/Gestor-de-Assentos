@@ -9,7 +9,6 @@ import Login from "./components/Login";
 import Menu from "./components/Menu";
 import Cadastro from "./components/Cadastro";
 
-const containerRef = useRef<any>(null);
 
 
 // ✅ ESTADOS DE LOGIN
@@ -64,6 +63,8 @@ const ROWS = 6;
 const GRID_COLS = 25;
 
 export default function Home() {
+
+  const containerRef = useRef<any>(null);
   const [tela, setTela] = useState("login");
 
   const [isDragging, setIsDragging] = useState(false);
