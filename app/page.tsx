@@ -426,18 +426,25 @@ export default function Home() {
             // ✅ INÍCIO do arrastar
             onPointerDown={() => {
 
-              // ✅ se estiver colocando foto, NÃO permite arrastar
               if (selecionada) return;
 
               if (!mapa[cadeiraNum]) return;
 
+              // ✅ SE JÁ ESTÁ SELECIONADO → CANCELA
+              if (dragCadeira === cadeiraNum) {
+                setDragCadeira(null)
+                setIsDragging(false)
+                return
+              }
+
               const timeout = setTimeout(() => {
                 setDragCadeira(cadeiraNum)
                 setIsDragging(true)
-              }, 600); // ⏱️ tempo de segurar (200ms)
+              }, 600);
 
               setDragTimeout(timeout);
             }}
+
 
 
 
@@ -486,10 +493,17 @@ export default function Home() {
               maxWidth: isMobile ? 50 : 70,
               aspectRatio: "1",
               background: "#2B2B2B",
+
               border:
                 dragCadeira === cadeiraNum
                   ? "3px solid red"
                   : "1px solid #555",
+
+              boxShadow:
+                dragCadeira === cadeiraNum
+                  ? "0 0 10px red"
+                  : "none",
+
               position: "relative",
               cursor: "pointer",
               borderRadius: 6,
