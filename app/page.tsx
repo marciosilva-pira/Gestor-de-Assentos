@@ -9,7 +9,8 @@ import Login from "./components/Login";
 import Menu from "./components/Menu";
 import Cadastro from "./components/Cadastro";
 
-const containerRef = useRef<HTMLDivElement>(null);
+const containerRef = useRef<any>(null);
+
 
 // ✅ ESTADOS DE LOGIN
 const inputStyle = {
@@ -94,21 +95,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // ✅ só roda no navegador
     if (typeof window === "undefined") return;
-
-    // ✅ garante que o elemento existe
     if (!containerRef.current) return;
 
     const el = containerRef.current;
 
     let startY = 0;
 
-    const handleTouchStart = (e: TouchEvent) => {
+    const handleTouchStart = (e: any) => {
       startY = e.touches[0].clientY;
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleTouchMove = (e: any) => {
       const currentY = e.touches[0].clientY;
 
       if (el.scrollTop === 0 && currentY > startY) {
@@ -124,6 +122,7 @@ export default function Home() {
       el.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
+
 
 
   // cadastro
