@@ -464,8 +464,10 @@ export default function Home() {
               overflow: "hidden",
               outline: "none",
               userSelect: "none",
-              WebkitTapHighlightColor: "transparent"
+              WebkitTapHighlightColor: "transparent",
+              touchAction: "none" 
             }}
+
           >
 
             {foto && (
