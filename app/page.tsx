@@ -430,7 +430,7 @@ export default function Home() {
               const timeout = setTimeout(() => {
                 setDragCadeira(cadeiraNum)
                 setIsDragging(true)
-              }, 400); // ⏱️ tempo de segurar (200ms)
+              }, 600); // ⏱️ tempo de segurar (200ms)
 
               setDragTimeout(timeout);
             }}
