@@ -92,21 +92,29 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const preventPullToRefresh = (e: TouchEvent) => {
-      if (window.scrollY === 0) {
+    let startY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const currentY = e.touches[0].clientY;
+
+      // ✅ só bloqueia se estiver no topo E puxando para baixo
+      if (window.scrollY === 0 && currentY > startY) {
         e.preventDefault();
       }
     };
 
-    document.addEventListener("touchmove", preventPullToRefresh, {
-      passive: false,
-    });
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
-      document.removeEventListener("touchmove", preventPullToRefresh);
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
-
 
   // cadastro
   const [novoNome, setNovoNome] = useState("");
