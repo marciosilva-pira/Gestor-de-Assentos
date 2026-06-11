@@ -94,8 +94,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // ✅ só roda no navegador
+    if (typeof window === "undefined") return;
+
+    // ✅ garante que o elemento existe
+    if (!containerRef.current) return;
+
     const el = containerRef.current;
-    if (!el) return;
 
     let startY = 0;
 
@@ -106,7 +111,6 @@ export default function Home() {
     const handleTouchMove = (e: TouchEvent) => {
       const currentY = e.touches[0].clientY;
 
-      // ✅ só bloqueia se estiver no topo E puxando pra baixo
       if (el.scrollTop === 0 && currentY > startY) {
         e.preventDefault();
       }
@@ -120,6 +124,7 @@ export default function Home() {
       el.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
+
 
   // cadastro
   const [novoNome, setNovoNome] = useState("");
