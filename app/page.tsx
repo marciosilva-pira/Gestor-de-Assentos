@@ -461,7 +461,10 @@ export default function Home() {
               maxWidth: isMobile ? 50 : 70,
               aspectRatio: "1",
               background: "#2B2B2B",
-              border: "1px solid #555",
+              border:
+                dragCadeira === cadeiraNum
+                  ? "3px solid red"
+                  : "1px solid #555",
               position: "relative",
               cursor: "pointer",
               borderRadius: 6,
@@ -469,7 +472,8 @@ export default function Home() {
               outline: "none",
               userSelect: "none",
               WebkitTapHighlightColor: "transparent",
-              touchAction: isDragging ? "none" : "auto"
+              touchAction: isDragging ? "none" : "auto",
+              opacity: dragCadeira === cadeiraNum ? 0.5 : 1
             }}
 
           >
