@@ -444,9 +444,13 @@ export default function Home() {
             }}
 
             onContextMenu={(e) => {
+              // ✅ Bloqueia no celular/tablet (toque)
+              if (navigator.maxTouchPoints > 0) return;
+
               e.preventDefault()
               removerFotoCadeira(cadeiraNum)
             }}
+
 
             style={{
               width: "100%",
