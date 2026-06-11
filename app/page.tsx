@@ -84,6 +84,29 @@ export default function Home() {
   }, [usuario]);
 
 
+  useEffect(() => {
+    const user = localStorage.getItem("usuario");
+    if (user) {
+      setUsuario(JSON.parse(user));
+    }
+  }, []);
+
+  useEffect(() => {
+    const preventPullToRefresh = (e: TouchEvent) => {
+      if (window.scrollY === 0) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", preventPullToRefresh, {
+      passive: false,
+    });
+
+    return () => {
+      document.removeEventListener("touchmove", preventPullToRefresh);
+    };
+  }, []);
+
 
   // cadastro
   const [novoNome, setNovoNome] = useState("");
