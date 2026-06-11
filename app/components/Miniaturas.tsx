@@ -38,9 +38,11 @@ export default function Miniaturas({
               height: 60,
               objectFit: "cover",
               userSelect: "none",
-              touchAction: "none", // ESSENCIAL para tablet
-              cursor: "grab"
+              touchAction: "none",
+              cursor: "grab",
+              border: selecionada === foto.url ? "3px solid #00BFFF" : "2px solid transparent"
             }}
+
           />
 
 

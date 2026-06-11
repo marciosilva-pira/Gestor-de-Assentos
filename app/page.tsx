@@ -63,6 +63,8 @@ const GRID_COLS = 25;
 export default function Home() {
   const [tela, setTela] = useState("login");
 
+  const [dragCadeira, setDragCadeira] = useState<number | null>(null);
+
   const [usuario, setUsuario] = useState<any>(null);
 
 
@@ -91,13 +93,6 @@ export default function Home() {
   const [mapa, setMapa] = useState<{ [key: number]: string }>({});
   const [fotos, setFotos] = useState<{ id: string; url: string }[]>([]);
 
-
-  const [dragFoto, setDragFoto] = useState<string | null>(null)
-  const [posicao, setPosicao] = useState({ x: 0, y: 0 })
-
-
-  // ✅ NOVO: controle de drag
-  //const [dragOrigem, setDragOrigem] = useState<number | null>(null);
 
   const [carregando, setCarregando] = useState(false);
   const [progresso, setProgresso] = useState(0);
@@ -170,26 +165,6 @@ export default function Home() {
     carregarFotosBanco();
   }, []);
 
-  useEffect(() => {
-    const move = (e: PointerEvent) => {
-      setPosicao({
-        x: e.clientX,
-        y: e.clientY
-      })
-    }
-
-    const up = () => {
-      setDragFoto(null)
-    }
-
-    window.addEventListener("pointermove", move)
-    window.addEventListener("pointerup", up)
-
-    return () => {
-      window.removeEventListener("pointermove", move)
-      window.removeEventListener("pointerup", up)
-    }
-  }, [])
 
   async function fazerLogin() {
     const snapshot = await getDocs(collection(db, "usuarios"));
@@ -425,19 +400,52 @@ export default function Home() {
           </span>
 
           <div
+            tabIndex={-1}
+            onMouseDown={(e) => e.preventDefault()}
 
-            onPointerUp={() => {
-              if (dragFoto) {
+            onClick={() => {
+              // ✅ 1. Se tem foto selecionada e cadeira vazia → colocar
+              if (selecionada && !mapa[cadeiraNum]) {
                 const novo = { ...mapa }
-                novo[cadeiraNum] = dragFoto
+                novo[cadeiraNum] = selecionada
                 setMapa(novo)
-                setDragFoto(null)
+                setSelecionada(null)
+                return
+              }
+
+              // ✅ 2. Se NÃO tem seleção e tem pessoa → câmera
+              if (!selecionada && mapa[cadeiraNum]) {
+                irParaPreset(cadeiraNum)
+              }
+            }}
+
+
+            // ✅ INÍCIO do arrastar
+            onPointerDown={() => {
+              if (mapa[cadeiraNum]) {
+                setDragCadeira(cadeiraNum)
+              }
+            }}
+
+            // ✅ SOLTAR (drop)
+            onPointerUp={() => {
+              if (dragCadeira !== null && dragCadeira !== cadeiraNum) {
+                const novo = { ...mapa }
+
+                // só move se destino estiver vazio
+                if (!mapa[cadeiraNum]) {
+                  novo[cadeiraNum] = mapa[dragCadeira]
+                  delete novo[dragCadeira]
+                  setMapa(novo)
+                }
+
+                setDragCadeira(null)
               }
             }}
 
             onContextMenu={(e) => {
-              e.preventDefault();
-              removerFotoCadeira(cadeiraNum);
+              e.preventDefault()
+              removerFotoCadeira(cadeiraNum)
             }}
 
             style={{
@@ -450,6 +458,9 @@ export default function Home() {
               cursor: "pointer",
               borderRadius: 6,
               overflow: "hidden",
+              outline: "none",
+              userSelect: "none",
+              WebkitTapHighlightColor: "transparent"
             }}
           >
 
@@ -769,15 +780,8 @@ export default function Home() {
             <img
               src={foto.url}
 
-              onPointerDown={(e) => {
+              onClick={() => {
                 setSelecionada(foto.url)
-
-                setDragFoto(foto.url) // ✅ ativa drag
-
-                setPosicao({
-                  x: e.clientX,
-                  y: e.clientY
-                })
               }}
 
               onDragStart={(e) => e.preventDefault()}
@@ -788,6 +792,7 @@ export default function Home() {
                 objectFit: "cover",
                 borderRadius: 6,
                 cursor: "grab",
+                border: selecionada === foto.url ? "3px solid red" : "2px solid transparent",
                 touchAction: "none"
               }}
             />
@@ -819,22 +824,7 @@ export default function Home() {
       </div>
 
 
-      {/* ✅ AQUI — imagem flutuante */}
-      {dragFoto && (
-        <img
-          src={dragFoto}
-          style={{
-            position: "fixed",
-            width: isMobile ? 50 : 60,
-            height: isMobile ? 50 : 60,
-            left: posicao.x - (isMobile ? 25 : 30),
-            top: posicao.y - (isMobile ? 25 : 30),
-            objectFit: "cover",
-            pointerEvents: "none",
-            zIndex: 9999
-          }}
-        />
-      )}
+
 
     </div>
   );
