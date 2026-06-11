@@ -834,8 +834,16 @@ export default function Home() {
               src={foto.url}
 
               onClick={() => {
+                // ✅ se já está selecionada → desmarca
+                if (selecionada === foto.url) {
+                  setSelecionada(null)
+                  return
+                }
+
+                // ✅ senão → seleciona
                 setSelecionada(foto.url)
               }}
+
 
               onDragStart={(e) => e.preventDefault()}
 
