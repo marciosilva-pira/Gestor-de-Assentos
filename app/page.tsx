@@ -2,9 +2,8 @@
 
 console.log("PAGE CARREGOU"); // ✅ COLOQUE AQUI
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-import { useRef } from "react";
 
 import Login from "./components/Login";
 import Menu from "./components/Menu";
