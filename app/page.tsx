@@ -293,24 +293,36 @@ export default function Home() {
 
 
   async function irParaPreset(numero: number) {
-    console.log("📸 Enviando preset:", numero); // 👈 AQUI
+  console.log("📸 Enviando preset:", numero);
 
-    try {
-      const res = await fetch("/api/preset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ preset: numero }),
-      });
+  try {
+    const res = await fetch("/api/preset", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ preset: numero }),
+    });
 
-      const data = await res.json();
-
-      console.log("✅ Resposta da API:", data); // 👈 AQUI
-    } catch (err) {
-      console.error("❌ Erro ao mover câmera", err);
+    if (!res.ok) {
+      alert("❌ API retornou erro ao chamar a câmera");
+      return;
     }
+
+    const data = await res.json();
+
+    if (data.ok) {
+      //alert(`✅ Comando enviado para a câmera (Preset ${numero})`);
+    } else {
+      alert("❌ API respondeu, mas não executou o comando");
+    }
+
+    console.log("✅ Resposta da API:", data);
+  } catch (err) {
+    alert("❌ Falha ao comunicar com a API da câmera");
+    console.error("Erro:", err);
   }
+}
 
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
