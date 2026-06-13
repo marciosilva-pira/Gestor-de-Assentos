@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     // ⚠️ ATENÇÃO: Coloque aqui o IP PÚBLICO do seu roteador (ex: 177.55.44.33) 
     // ou o seu domínio DDNS (ex: minhaigreja.duckdns.org)
     // O IP 192.168.15.88 NÃO vai funcionar quando o app estiver na nuvem!
-    const CAMERA_PUBLIC_IP = "192.168.15.88"; 
+    const CAMERA_PUBLIC_IP = "201.69.176.251"; 
     const VISCA_PORT = 52381;
 
     const viscaPreset = preset;
