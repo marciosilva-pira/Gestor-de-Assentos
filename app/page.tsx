@@ -380,7 +380,8 @@ export default function Home() {
     // 1. NÃO está adicionando foto
     // 2. E a cadeira TEM alguém
     if (!selecionada && temPessoa) {
-      irParaPreset(num);
+      //irParaPreset(num);
+      irParaPreset(1);
       return;
     }
 
@@ -471,7 +472,13 @@ export default function Home() {
 
               // ✅ 2. Se NÃO tem seleção e tem pessoa → câmera
               if (!selecionada && mapa[cadeiraNum]) {
+
+                console.log("cadeiraNum:", cadeiraNum);
+console.log("mapa[cadeiraNum]:", mapa[cadeiraNum]);
+console.log("selecionada:", selecionada);
+
                 irParaPreset(cadeiraNum)
+                //irParaPreset(54)
               }
             }}
 

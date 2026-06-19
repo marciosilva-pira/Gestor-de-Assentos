@@ -5,6 +5,7 @@ import dgram from "dgram";
 
 export async function POST(req: NextRequest) {
   console.log("📡 API /preset chamada (via UDP WAN)");
+   console.log("🚨 CHEGOU NA API /preset");
 
   try {
     const { preset } = await req.json();
@@ -12,10 +13,14 @@ export async function POST(req: NextRequest) {
     // ⚠️ ATENÇÃO: Coloque aqui o IP PÚBLICO do seu roteador (ex: 177.55.44.33) 
     // ou o seu domínio DDNS (ex: minhaigreja.duckdns.org)
     // O IP 192.168.15.88 NÃO vai funcionar quando o app estiver na nuvem!
-    const CAMERA_PUBLIC_IP = "189.78.66.144"; 
+    //const CAMERA_PUBLIC_IP = "189.78.66.144"; 
+    const CAMERA_PUBLIC_IP = "192.168.15.88";
     const VISCA_PORT = 52381;
 
+console.log("Preset recebido:", preset);
+
     const viscaPreset = preset;
+    console.log("Preset tratado:", viscaPreset);    
 
     const payload = Buffer.from([
       0x81, 0x01, 0x04, 0x3F, 0x02, viscaPreset, 0xFF,
