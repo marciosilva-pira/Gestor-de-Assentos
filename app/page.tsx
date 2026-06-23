@@ -71,9 +71,9 @@ export default function Home() {
   const [dragCadeira, setDragCadeira] = useState<number | null>(null);
   const [dragTimeout, setDragTimeout] = useState<any>(null);
 
-
   const [usuario, setUsuario] = useState<any>(null);
 
+  const [ipCamera, setIpCamera] = useState("");
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -88,12 +88,35 @@ export default function Home() {
   }, [usuario]);
 
 
+
   useEffect(() => {
     const user = localStorage.getItem("usuario");
     if (user) {
       setUsuario(JSON.parse(user));
     }
   }, []);
+
+
+  useEffect(() => {
+    async function pegarIP() {
+      try {
+        console.log("🔄 Buscando IP...");
+
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+
+        console.log("✅ IP detectado:", data.ip);
+
+        setIpCamera(data.ip || "");
+
+      } catch (err) {
+        console.error("❌ ERRO AO PEGAR IP:", err);
+      }
+    }
+
+    pegarIP();
+  }, []);
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -293,36 +316,39 @@ export default function Home() {
 
 
   async function irParaPreset(numero: number) {
-  console.log("📸 Enviando preset:", numero);
+    console.log("📸 Enviando preset:", numero);
 
-  try {
-    const res = await fetch("/api/preset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ preset: numero }),
-    });
+    try {
+      const res = await fetch("/api/preset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          preset: numero,
+          ip: ipCamera // ✅ AGORA ESTÁ ENVIANDO O IP
+        }),
+      });
 
-    if (!res.ok) {
-      alert("❌ API retornou erro ao chamar a câmera");
-      return;
+      if (!res.ok) {
+        alert("❌ API retornou erro ao chamar a câmera");
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.ok) {
+        //alert(`✅ Comando enviado para a câmera (Preset ${numero})`);
+      } else {
+        alert("❌ API respondeu, mas não executou o comando");
+      }
+
+      console.log("✅ Resposta da API:", data);
+    } catch (err) {
+      alert("❌ Falha ao comunicar com a API da câmera");
+      console.error("Erro:", err);
     }
-
-    const data = await res.json();
-
-    if (data.ok) {
-      //alert(`✅ Comando enviado para a câmera (Preset ${numero})`);
-    } else {
-      alert("❌ API respondeu, mas não executou o comando");
-    }
-
-    console.log("✅ Resposta da API:", data);
-  } catch (err) {
-    alert("❌ Falha ao comunicar com a API da câmera");
-    console.error("Erro:", err);
   }
-}
 
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
@@ -474,8 +500,8 @@ export default function Home() {
               if (!selecionada && mapa[cadeiraNum]) {
 
                 console.log("cadeiraNum:", cadeiraNum);
-console.log("mapa[cadeiraNum]:", mapa[cadeiraNum]);
-console.log("selecionada:", selecionada);
+                console.log("mapa[cadeiraNum]:", mapa[cadeiraNum]);
+                console.log("selecionada:", selecionada);
 
                 irParaPreset(cadeiraNum)
                 //irParaPreset(54)
@@ -663,6 +689,10 @@ console.log("selecionada:", selecionada);
     return (
       <Menu
         usuario={usuario}
+
+        ipCamera={ipCamera}           // ✅ AQUI
+        setIpCamera={setIpCamera}
+
         onIrPainel={async () => {
           await carregarMapaFirebase();
           setTela("painel");

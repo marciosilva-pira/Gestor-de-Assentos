@@ -3,26 +3,28 @@
 import { useState, useEffect } from "react";
 import UsuariosGrid from "./UsuariosGrid";
 
-export default function Menu({ usuario, onIrPainel, onIrCadastro, onSair }: any) {
+
+
+export default function Menu({ usuario, ipCamera, setIpCamera, onIrPainel, onIrCadastro, onSair }: any) {
 
     const [aba, setAba] = useState("");
 
     const [menuAberto, setMenuAberto] = useState(false);
 
-useEffect(() => {
-    function ajustarMenu() {
-        if (window.innerWidth >= 768) {
-            setMenuAberto(true);
-        } else {
-            setMenuAberto(false);
+    useEffect(() => {
+        function ajustarMenu() {
+            if (window.innerWidth >= 768) {
+                setMenuAberto(true);
+            } else {
+                setMenuAberto(false);
+            }
         }
-    }
 
-    ajustarMenu();
-    window.addEventListener("resize", ajustarMenu);
+        ajustarMenu();
+        window.addEventListener("resize", ajustarMenu);
 
-    return () => window.removeEventListener("resize", ajustarMenu);
-}, []);
+        return () => window.removeEventListener("resize", ajustarMenu);
+    }, []);
 
     function fecharSeMobile() {
         if (window.innerWidth < 768) {
@@ -30,7 +32,7 @@ useEffect(() => {
         }
     }
 
-console.log("Menu renderizado");
+    console.log("Menu renderizado");
 
     return (
         <div className="min-h-screen bg-slate-900 flex">
@@ -57,7 +59,7 @@ console.log("Menu renderizado");
 
             {/* ✅ MENU LATERAL */}
             <div
-  className={`
+                className={`
     fixed
     top-0 left-0
     h-full
@@ -73,7 +75,7 @@ console.log("Menu renderizado");
 
     z-[9999]
   `}
->
+            >
 
 
 
@@ -82,6 +84,24 @@ console.log("Menu renderizado");
                     👤 {usuario?.nome}
                 </div>
 
+                <div style={{ marginBottom: 10 }}>
+                    <label style={{ color: "white", fontSize: 12 }}>
+                        IP da Câmera (Vivo)
+                    </label>
+
+                    <input
+                        type="text"
+                        placeholder="Ex: 189.78.xxx.xxx"
+                        value={ipCamera}
+                        onChange={(e) => setIpCamera(e.target.value)}
+                        style={{
+                            width: "100%",
+                            padding: 8,
+                            borderRadius: 6,
+                            border: "1px solid #ccc"
+                        }}
+                    />
+                </div>
 
                 <button
                     onClick={() => {
