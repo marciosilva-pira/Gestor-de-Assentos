@@ -268,42 +268,6 @@ export default function Home() {
   }
 
 
-  async function cadastrarUsuario() {
-    // ✅ VALIDAÇÃO DOS CAMPOS
-    if (!novoNome || novoNome.trim() === "") {
-      alert("Digite o nome do usuário");
-      return;
-    }
-
-    if (!novoEmail || novoEmail.trim() === "") {
-      alert("Digite o email");
-      return;
-    }
-
-    if (!novaSenha || novaSenha.trim() === "") {
-      alert("Digite a senha");
-      return;
-    }
-
-    // ✅ SE PASSAR NA VALIDAÇÃO, SALVA
-    await addDoc(collection(db, "usuarios"), {
-      nome: novoNome.trim(),
-      email: novoEmail.trim(),
-      senha: novaSenha.trim(),
-      admin: novoAdmin,
-    });
-
-    alert("✅ Usuário criado com sucesso!");
-
-    // limpa campos (opcional)
-    setNovoNome("");
-    setNovoEmail("");
-    setNovaSenha("");
-    setNovoAdmin(false);
-
-    setTela("menu");
-  }
-
   async function excluirFoto(id: string) {
     if (!confirm("Deseja excluir esta foto do Banco de Dados?")) return;
     await deleteDoc(doc(db, "fotos", id));
@@ -350,6 +314,13 @@ export default function Home() {
     }
   }
 
+
+  async function irParaPresetCameraPalco(numero: number) {
+    console.log("📸 Camera Palco preset:", numero);
+
+    // FUTURO:
+    // await fetch("/api/preset2", {...})
+  }
 
   async function carregarFotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -716,12 +687,6 @@ export default function Home() {
     );
   }
 
-
-
-
-
-
-
   return (
 
     <div
@@ -807,10 +772,12 @@ export default function Home() {
           style={{
             display: "grid",
             gridTemplateColumns: `
-            repeat(5, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(6, 1fr) 0.2fr
-            repeat(5, 1fr)
+            
+repeat(5, 1fr) 4px
+  repeat(6, 1fr) 4px
+  repeat(6, 1fr) 4px
+  repeat(5, 1fr)
+
           `,
             marginTop: 6,
             marginBottom: 20,
@@ -819,17 +786,85 @@ export default function Home() {
             color: "#ccc",
           }}
         >
-          <div style={{ gridColumn: "1 / span 5", textAlign: "center" }}>
+
+          <button
+            onClick={() => {
+              irParaPresetCameraPalco(3);
+              // FUTURO:
+              // irParaPresetCamera2(3)
+            }}
+
+            onMouseEnter={(e) => e.currentTarget.style.background = "#2a2a2a"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+
+            style={{
+              gridColumn: "1 / span 5",
+              textAlign: "center",
+              background: "transparent",
+              border: "1px solid #555",
+              color: "#ccc",
+              fontWeight: "bold",
+              padding: "6px",
+              cursor: "pointer",
+              borderRadius: 6,
+              transition: "0.2s"
+            }}
+          >
             3 - CADEIRA (ESQUERDO)
-          </div>
+          </button>
 
-          <div style={{ gridColumn: "7 / span 13", textAlign: "center" }}>
+          <button
+            onClick={() => {
+              irParaPresetCameraPalco(2);
+              // FUTURO:
+              // irParaPresetCamera2(3)
+            }}
+
+            onMouseEnter={(e) => e.currentTarget.style.background = "#2a2a2a"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+
+            style={{
+              gridColumn: "7 / span 13",
+              textAlign: "center",
+              background: "transparent",
+              border: "1px solid #555",
+              color: "#ccc",
+              fontWeight: "bold",
+              padding: "6px",
+              cursor: "pointer",
+              borderRadius: 6,
+              transition: "0.2s"
+            }}
+          >
             2 - TRIBUNA
-          </div>
+          </button>
 
-          <div style={{ gridColumn: "20 / span 5", textAlign: "center" }}>
+          <button
+            onClick={() => {
+              irParaPresetCameraPalco(4);
+              // FUTURO:
+              // irParaPresetCamera2(3)
+            }}
+
+            onMouseEnter={(e) => e.currentTarget.style.background = "#2a2a2a"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+
+            style={{
+              gridColumn: "21 / span 5",
+              textAlign: "center",
+              background: "transparent",
+              border: "1px solid #555",
+              color: "#ccc",
+              fontWeight: "bold",
+              padding: "6px",
+              cursor: "pointer",
+              borderRadius: 6,
+              transition: "0.2s"
+            }}
+          >
             4 - MESA (DIREITO)
-          </div>
+          </button>
+
         </div>
       )}
 
