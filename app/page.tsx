@@ -467,6 +467,12 @@ export default function Home() {
             onMouseDown={(e) => e.preventDefault()}
 
             onClick={() => {
+
+              // Se estiver arrastando uma pessoa, não faz nada
+              if (dragCadeira !== null || isDragging) {
+                return;
+              }
+
               // ✅ 1. Se tem foto selecionada e cadeira vazia → colocar
               if (selecionada && !mapa[cadeiraNum]) {
                 const novo = { ...mapa }
@@ -479,7 +485,7 @@ export default function Home() {
               // ✅ 2. Se NÃO tem seleção e tem pessoa → câmera
               // if (!selecionada && mapa[cadeiraNum]) {
               // vou trocar se NÃO TEM seleção, mesmo que a cadeira esteja vazia, vai enviar o preset
-            
+
               if (!selecionada) {
 
                 console.log("cadeiraNum:", cadeiraNum);
