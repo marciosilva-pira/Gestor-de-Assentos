@@ -477,7 +477,10 @@ export default function Home() {
               }
 
               // ✅ 2. Se NÃO tem seleção e tem pessoa → câmera
-              if (!selecionada && mapa[cadeiraNum]) {
+              // if (!selecionada && mapa[cadeiraNum]) {
+              // vou trocar se NÃO TEM seleção, mesmo que a cadeira esteja vazia, vai enviar o preset
+            
+              if (!selecionada) {
 
                 console.log("cadeiraNum:", cadeiraNum);
                 console.log("mapa[cadeiraNum]:", mapa[cadeiraNum]);
