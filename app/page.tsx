@@ -393,6 +393,15 @@ export default function Home() {
 
 
   function removerFotoCadeira(num: number) {
+
+    if (
+      !window.confirm(
+        "Deseja realmente remover esta foto da cadeira?\n\nA foto continuará cadastrada no banco de dados."
+      )
+    ) {
+      return;
+    }
+
     const novo = { ...mapa };
     delete novo[num];
     setMapa(novo);

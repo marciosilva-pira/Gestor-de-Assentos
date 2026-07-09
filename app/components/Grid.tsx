@@ -1,22 +1,22 @@
 "use client";
 
-export default function Grid({ mapa, setMapa, selecionada, setSelecionada }: any)
- {
+export default function Grid({ mapa, setMapa, selecionada, setSelecionada }: any) {
 
   function clicarCadeira(num: number) {
-  if (!selecionada) return;
+    if (!selecionada) return;
 
-  const novo = { ...mapa };
-  novo[num] = selecionada;
+    const novo = { ...mapa };
+    novo[num] = selecionada;
 
-  setMapa(novo);
+    setMapa(novo);
 
-  // limpa seleção depois de usar
-  setSelecionada(null);
-}
+    // limpa seleção depois de usar
+    setSelecionada(null);
+  }
 
 
   function remover(num: number) {
+    
     const novo = { ...mapa };
     delete novo[num];
     setMapa(novo);
