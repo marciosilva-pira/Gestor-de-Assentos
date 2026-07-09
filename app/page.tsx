@@ -468,11 +468,6 @@ export default function Home() {
 
             onClick={() => {
 
-              // Se estiver arrastando uma pessoa, não faz nada
-              if (dragCadeira !== null || isDragging) {
-                return;
-              }
-
               // ✅ 1. Se tem foto selecionada e cadeira vazia → colocar
               if (selecionada && !mapa[cadeiraNum]) {
                 const novo = { ...mapa }
